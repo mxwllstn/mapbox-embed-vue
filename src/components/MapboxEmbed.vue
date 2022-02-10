@@ -4,7 +4,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import mapboxgl from '../lib/mapbox-gl'
+import mapboxgl from 'mapbox-gl'
 
 export type Styles =
   | 'streets'
@@ -29,6 +29,10 @@ export default defineComponent({
     mapStyle: {
       type: String,
       default: 'streets'
+    },
+    accessToken: {
+      type: String,
+      default: null
     }
   },
   computed: {
@@ -63,6 +67,9 @@ export default defineComponent({
           return 'mapbox://styles/mapbox/streets-v11'
       }
     }
+  },
+  created() {
+    mapboxgl.accessToken = this.accessToken
   },
   mounted() {
     const map = new mapboxgl.Map({
