@@ -1,11 +1,44 @@
-# Vue 3 + Typescript + Vite
+# mapbox-embed (Vue component)
+Vue component that embeds a mapbox map with a marker
 
-This template should help get you started developing with Vue 3 and Typescript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+## Usage
 
-## Recommended IDE Setup
+#### Component
+```vue
+<MapboxEmbed 
+  coordinates="34.077072, -118.269450"
+  map-style="satellite-streets"
+  zoom="15"
+  :access-token="pk.abc123"
+/>
+```
 
-- [VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=johnsoncodehk.volar)
+#### Map Styles
+```ts
+export type Styles =
+  | 'streets'
+  | 'outdoors'
+  | 'light'
+  | 'dark'
+  | 'satellite'
+  | 'satellite-streets'
+  | 'navigation-day'
+  | 'navigation-night'
+```
 
-## Type Support For `.vue` Imports in TS
+## Development Setup (Vue + Vite)
 
-Since TypeScript cannot handle type information for `.vue` imports, they are shimmed to be a generic Vue component type by default. In most cases this is fine if you don't really care about component prop types outside of templates. However, if you wish to get actual prop types in `.vue` imports (for example to get props validation when using manual `h(...)` calls), you can enable Volar's `.vue` type support plugin by running `Volar: Switch TS Plugin on/off` from VSCode command palette.
+```bash
+# install dependencies
+$ yarn install
+
+# serve with hot reload at localhost:3000
+$ yarn dev
+
+# build for production
+$ yarn build
+
+# preview production build
+$ yarn preview --host
+
+```
