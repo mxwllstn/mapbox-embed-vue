@@ -1,7 +1,5 @@
 <template>
-  <div class="container">
-    <MapboxEmbed coordinates="34.077072, -118.269450" map-style="satellite-streets" zoom="15" :access-token="mapboxAccessToken" />
-  </div>
+  <MapboxEmbed coordinates="34.077072, -118.269450" map-style="satellite-streets" zoom="15" :access-token="mapboxAccessToken" width="250px" height="250px" />
 </template>
 
 <script lang="ts">

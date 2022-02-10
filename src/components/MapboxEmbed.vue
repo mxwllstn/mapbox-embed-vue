@@ -1,5 +1,7 @@
 <template>
-  <div id="map"></div>
+  <div class="map-container" :style="{ width: width, height: height}">
+    <div id="map"></div>
+  </div>
 </template>
 
 <script lang="ts">
@@ -33,6 +35,14 @@ export default defineComponent({
     accessToken: {
       type: String,
       default: null
+    },
+    width: {
+      type: String,
+      default: "300px"
+    },
+    height: {
+      type: String,
+      default: "300px"
     }
   },
   computed: {
