@@ -1,6 +1,8 @@
 {
   "name": "mapbox-embed",
-  "version": "0.0.0",
+  "version": "0.0.1",
+  "author": "Max Stein <maxwell.stein@gmail.com> (https://maxstein.net",
+  "license": "MIT",
   "files": [
     "dist"
   ],
