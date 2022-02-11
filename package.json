@@ -1,7 +1,8 @@
 {
-  "name": "mapbox-embed",
+  "name": "mapbox-embed-vue",
   "version": "0.0.1",
   "author": "Max Stein <maxwell.stein@gmail.com> (https://maxstein.net",
+  "description": "Vue component that embeds a mapbox map with a marker",
   "license": "MIT",
   "files": [
     "dist"
