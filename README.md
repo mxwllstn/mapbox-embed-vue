@@ -21,7 +21,7 @@ npm install mapbox-embed-vue
   coordinates="34.077072, -118.269450"
   map-style="satellite-streets"
   zoom="15"
-  :access-token="pk.abc123"
+  access-token="pk.abc123"
 />
 ```
 
