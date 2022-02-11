@@ -1,6 +1,6 @@
 <template>
   <div class="map-container" :style="{ width: width, height: height}">
-    <div id="map"></div>
+    <div :id="mapId" class="map"></div>
   </div>
 </template>
 
@@ -76,6 +76,9 @@ export default defineComponent({
         default:
           return 'mapbox://styles/mapbox/streets-v11'
       }
+    },
+    mapId() {
+      return `map${self.crypto.getRandomValues(new Uint32Array(10))[0]}`
     }
   },
   created() {
@@ -83,7 +86,7 @@ export default defineComponent({
   },
   mounted() {
     const map = new mapboxgl.Map({
-      container: 'map', // container ID
+      container: this.mapId, // container ID
       style: this.styleUrl, // style URL
       center: this.coords, // starting position [lng, lat]
       zoom: this.startingZoom // starting zoom
@@ -96,7 +99,7 @@ export default defineComponent({
 <style lang="scss">
 @import 'ress';
 @import 'mapbox-gl/dist/mapbox-gl.css';
-#map {
+.map {
   width: 100%;
   height: 100%;
 }
