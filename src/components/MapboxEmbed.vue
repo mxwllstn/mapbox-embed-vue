@@ -1,5 +1,5 @@
 <template>
-  <div class="map-container" :style="{ width: width, height: height}">
+  <div class="map-container" :style="{ width: width, height: height }">
     <div :id="mapId" class="map"></div>
   </div>
 </template>
@@ -7,6 +7,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import mapboxgl from 'mapbox-gl'
+import * as turf from '@turf/turf'
 
 export type Styles =
   | 'streets'
@@ -17,6 +18,10 @@ export type Styles =
   | 'satellite-streets'
   | 'navigation-day'
   | 'navigation-night'
+
+interface MapBoxOptionsExtended extends mapboxgl.MapboxOptions {
+  projection: string
+}
 
 export default defineComponent({
   props: {
@@ -38,19 +43,33 @@ export default defineComponent({
     },
     width: {
       type: String,
-      default: "300px"
+      default: '300px'
     },
     height: {
       type: String,
-      default: "300px"
+      default: '300px'
+    },
+    marker: {
+      type: String,
+      default: null
     }
   },
+  emits: ['mapLoaded'],
   computed: {
-    coords() {
-      return this.coordinates
-        .split(',')
-        .map(item => Number(item))
-        .reverse() as mapboxgl.LngLatLike
+    coordsArray() {
+      return this.coordinates.split('|').map(
+        loc =>
+          loc
+            .split(',')
+            .map(coords => Number(coords))
+            .reverse() as mapboxgl.LngLatLike
+      ) as mapboxgl.LngLatLike[]
+    },
+    center() {
+      return turf.getCoords(turf.center(turf.points(this.coordsArray as turf.Position[]))) as any
+    },
+    bounds() {
+      return turf.bbox(turf.lineString(this.coordsArray as turf.Position[]))
     },
     startingZoom() {
       return Number(this.zoom)
@@ -85,13 +104,32 @@ export default defineComponent({
     mapboxgl.accessToken = this.accessToken
   },
   mounted() {
+    console.log(this.center)
     const map = new mapboxgl.Map({
       container: this.mapId, // container ID
       style: this.styleUrl, // style URL
-      center: this.coords, // starting position [lng, lat]
-      zoom: this.startingZoom // starting zoom
+      center: this.center, // starting position [lng, lat]
+      zoom: this.startingZoom // starting zoom,
+      // projection: 'naturalEarth' // starting projection
+    } as MapBoxOptionsExtended)
+
+    const markers = this.coordsArray.map(coords => {
+      const el = this.marker ? document.createElement('div') : undefined
+      if (el) {
+        el.className = 'marker'
+        el.style.backgroundImage = `url("${this.marker}")`
+      }
+      return new mapboxgl.Marker(el).setLngLat(coords).addTo(map)
     })
-    const marker = new mapboxgl.Marker().setLngLat(this.coords).addTo(map)
+
+    this.$emit('mapLoaded', map, this.coordsArray)
+
+    if (this.coordsArray?.length > 1) {
+      map.fitBounds(this.bounds as mapboxgl.LngLatBoundsLike, { duration: 0, padding: 80 })
+      // map.setZoom(2)
+    } else {
+      map.setZoom(15)
+    }
   }
 })
 </script>
@@ -102,5 +140,14 @@ export default defineComponent({
 .map {
   width: 100%;
   height: 100%;
+}
+.marker {
+  background-size: cover;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+}
+.mapboxgl-control-container {
+  display: none;
 }
 </style>
