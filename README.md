@@ -1,17 +1,5 @@
 # mapbox-embed-vue
-[![Version](https://img.shields.io/npm/v/mapbox-embed-vue.svg)](https://www.npmjs.org/package/mapbox-embed-vue)
-
 Vue component that embeds a mapbox map with a marker
-
-## Install
-Use `yarn` to install the module
-```bash
-yarn add mapbox-embed-vue
-```
-Or use `npm` to install the module
-```bash
-npm install mapbox-embed-vue
-```
 
 ## Usage
 
@@ -21,7 +9,7 @@ npm install mapbox-embed-vue
   coordinates="34.077072, -118.269450"
   map-style="satellite-streets"
   zoom="15"
-  :access-token="pk.abc123"
+  access-token="pk.abc123"
 />
 ```
 
