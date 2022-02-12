@@ -54,5 +54,8 @@
     "vue": "^3.2.25",
     "vue-eslint-parser": "^8.2.0",
     "vue-tsc": "^0.29.8"
+  },
+  "resolutions": {
+    "follow-redirects": "^1.14.8"
   }
 }
