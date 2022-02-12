@@ -31,7 +31,7 @@ export default defineComponent({
     },
     zoom: {
       type: String,
-      default: '9'
+      default: '1'
     },
     mapStyle: {
       type: String,
@@ -57,16 +57,18 @@ export default defineComponent({
   emits: ['mapLoaded'],
   computed: {
     coordsArray() {
-      return this.coordinates.split('|').map(
-        loc =>
-          loc
-            .split(',')
-            .map(coords => Number(coords))
-            .reverse() as mapboxgl.LngLatLike
-      ) as mapboxgl.LngLatLike[]
+      return this.coordinates
+        ? (this.coordinates.split('|').map(
+            loc =>
+              loc
+                .split(',')
+                .map(coords => Number(coords))
+                .reverse() as mapboxgl.LngLatLike
+          ) as mapboxgl.LngLatLike[])
+        : null
     },
     center() {
-      return turf.getCoords(turf.center(turf.points(this.coordsArray as turf.Position[]))) as any
+      return this.coordsArray ? turf.getCoords(turf.center(turf.points(this.coordsArray as turf.Position[]))) : null
     },
     bounds() {
       return turf.bbox(turf.lineString(this.coordsArray as turf.Position[]))
@@ -113,22 +115,24 @@ export default defineComponent({
       // projection: 'naturalEarth' // starting projection
     } as MapBoxOptionsExtended)
 
-    const markers = this.coordsArray.map(coords => {
-      const el = this.marker ? document.createElement('div') : undefined
-      if (el) {
-        el.className = 'marker'
-        el.style.backgroundImage = `url("${this.marker}")`
+    if (this.coordsArray) {
+      const markers = this.coordsArray.map(coords => {
+        const el = this.marker ? document.createElement('div') : undefined
+        if (el) {
+          el.className = 'marker'
+          el.style.backgroundImage = `url("${this.marker}")`
+        }
+        return new mapboxgl.Marker(el).setLngLat(coords).addTo(map)
+      })
+
+      this.$emit('mapLoaded', map, this.coordsArray)
+
+      if (this.coordsArray?.length > 1) {
+        map.fitBounds(this.bounds as mapboxgl.LngLatBoundsLike, { duration: 0, padding: 80 })
+        // map.setZoom(2)
+      } else {
+        map.setZoom(15)
       }
-      return new mapboxgl.Marker(el).setLngLat(coords).addTo(map)
-    })
-
-    this.$emit('mapLoaded', map, this.coordsArray)
-
-    if (this.coordsArray?.length > 1) {
-      map.fitBounds(this.bounds as mapboxgl.LngLatBoundsLike, { duration: 0, padding: 80 })
-      // map.setZoom(2)
-    } else {
-      map.setZoom(15)
     }
   }
 })
