@@ -6,7 +6,7 @@
     :access-token="mapboxAccessToken"
     width="100vw"
     height="100vh"
-    marker="/play-marker-white.svg"
+    marker="/marker.svg"
     @map-loaded="onMapLoad"
   />
 </template>
