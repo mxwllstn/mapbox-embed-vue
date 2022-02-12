@@ -71,6 +71,14 @@ export default defineComponent({
     bounds() {
       return turf.bbox(turf.lineString(this.coordsArray as turf.Position[]))
     },
+    coords() {
+      return this.coordinates
+        ? (this.coordinates
+            .split(',')
+            .map(item => Number(item))
+            .reverse() as mapboxgl.LngLatLike)
+        : null
+    },
     startingZoom() {
       return Number(this.zoom)
     },
@@ -108,7 +116,7 @@ export default defineComponent({
     const map = new mapboxgl.Map({
       container: this.mapId, // container ID
       style: this.styleUrl, // style URL
-      center: this.center, // starting position [lng, lat]
+      center: this.coords || [0, 0], // starting position [lng, lat]
       zoom: this.startingZoom // starting zoom,
       // projection: 'naturalEarth' // starting projection
     } as MapBoxOptionsExtended)
