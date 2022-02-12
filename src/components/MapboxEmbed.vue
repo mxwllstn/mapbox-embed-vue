@@ -108,7 +108,7 @@ export default defineComponent({
     const map = new mapboxgl.Map({
       container: this.mapId, // container ID
       style: this.styleUrl, // style URL
-      center: this.center, // starting position [lng, lat]
+      center: this.center || [0, 0], // starting position [lng, lat]
       zoom: this.startingZoom // starting zoom,
       // projection: 'naturalEarth' // starting projection
     } as MapBoxOptionsExtended)
