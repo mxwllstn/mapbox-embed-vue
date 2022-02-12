@@ -1,5 +1,5 @@
 <template>
-  <div class="map-container" :style="{ width: width, height: height}">
+  <div class="map-container" :style="{ width: width, height: height }">
     <div :id="mapId" class="map"></div>
   </div>
 </template>
@@ -38,19 +38,21 @@ export default defineComponent({
     },
     width: {
       type: String,
-      default: "300px"
+      default: '300px'
     },
     height: {
       type: String,
-      default: "300px"
+      default: '300px'
     }
   },
   computed: {
     coords() {
       return this.coordinates
-        .split(',')
-        .map(item => Number(item))
-        .reverse() as mapboxgl.LngLatLike
+        ? (this.coordinates
+            .split(',')
+            .map(item => Number(item))
+            .reverse() as mapboxgl.LngLatLike)
+        : null
     },
     startingZoom() {
       return Number(this.zoom)
@@ -88,10 +90,10 @@ export default defineComponent({
     const map = new mapboxgl.Map({
       container: this.mapId, // container ID
       style: this.styleUrl, // style URL
-      center: this.coords, // starting position [lng, lat]
+      center: this.coords || [0, 0], // starting position [lng, lat]
       zoom: this.startingZoom // starting zoom
     })
-    const marker = new mapboxgl.Marker().setLngLat(this.coords).addTo(map)
+    const marker = this.coords ? new mapboxgl.Marker().setLngLat(this.coords).addTo(map) : null
   }
 })
 </script>
