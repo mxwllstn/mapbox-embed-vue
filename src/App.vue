@@ -72,8 +72,6 @@ export default defineComponent({
       })
     },
     onMarkerClick(marker: any, ix: number) {
-      console.log(ix)
-      console.log(marker)
       this.toggleMarker(marker)
     },
     toggleMarker(marker: any) {
