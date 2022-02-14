@@ -21,7 +21,9 @@ export default defineComponent({
   components: { MapboxEmbed },
   data() {
     return {
-      mapboxAccessToken: import.meta.env.VITE_MAPBOX_ACCESS_TOKEN as string
+      mapboxAccessToken: import.meta.env.VITE_MAPBOX_ACCESS_TOKEN as string,
+      marker: 'marker.svg',
+      markerAlt: 'marker-alt.svg'
     }
   },
   methods: {
@@ -33,10 +35,7 @@ export default defineComponent({
             type: 'Feature',
             geometry: {
               type: 'LineString',
-              coordinates:
-                idx < coords.length - 1
-                  ? [coords[idx], coords[idx + 1]]
-                  : [coords[idx], coords[0]]
+              coordinates: idx < coords.length - 1 ? [coords[idx], coords[idx + 1]] : [coords[idx], coords[0]]
             }
           }
         })
@@ -75,6 +74,19 @@ export default defineComponent({
     onMarkerClick(marker: any, ix: number) {
       console.log(ix)
       console.log(marker)
+      this.toggleMarker(marker)
+    },
+    toggleMarker(marker: any) {
+      const el = marker.getElement()
+      const { backgroundImage } = el.style
+      if (backgroundImage.includes(this.marker)) {
+        this.setBackgroundImage(el, this.markerAlt)
+      } else {
+        this.setBackgroundImage(el, this.marker)
+      }
+    },
+    setBackgroundImage(el: { style: { backgroundImage: string } }, image: string) {
+      el.style.backgroundImage = `url('/${image}')`
     }
   }
 })
