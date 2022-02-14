@@ -54,7 +54,7 @@ export default defineComponent({
       default: null
     }
   },
-  emits: ['mapLoaded'],
+  emits: ['mapLoaded', 'markerClicked'],
   computed: {
     coordsArray() {
       return this.coordinates
@@ -116,13 +116,15 @@ export default defineComponent({
     } as MapBoxOptionsExtended)
 
     if (this.coordsArray) {
-      const markers = this.coordsArray.map(coords => {
+      const markers = this.coordsArray.map((coords, ix) => {
         const el = this.marker ? document.createElement('div') : undefined
         if (el) {
           el.className = 'marker'
           el.style.backgroundImage = `url("${this.marker}")`
         }
-        return new mapboxgl.Marker(el).setLngLat(coords).addTo(map)
+        const marker = new mapboxgl.Marker(el).setLngLat(coords).addTo(map)
+        marker.getElement().onclick = () => this.$emit('markerClicked', marker, ix)
+        return marker
       })
 
       this.$emit('mapLoaded', map, this.coordsArray)

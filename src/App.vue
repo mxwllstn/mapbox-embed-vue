@@ -8,6 +8,7 @@
     height="100vh"
     marker="/marker.svg"
     @map-loaded="onMapLoad"
+    @marker-clicked="onMarkerClick"
   />
 </template>
 
@@ -70,6 +71,10 @@ export default defineComponent({
           }
         })
       })
+    },
+    onMarkerClick(marker: any, ix: number) {
+      console.log(ix)
+      console.log(marker)
     }
   }
 })
