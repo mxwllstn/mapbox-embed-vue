@@ -54,18 +54,16 @@ export default defineComponent({
       default: null
     }
   },
-  emits: ['mapLoaded', 'markerClicked'],
+  emits: ['mapLoaded', 'markerClicked', 'coordinatesUpdated'],
+  data() {
+    return {
+      map: null as mapboxgl.Map | null,
+      markers: null as mapboxgl.Marker[] | null
+    }
+  },
   computed: {
     coordsArray() {
-      return this.coordinates
-        ? (this.coordinates.split('|').map(
-            loc =>
-              loc
-                .split(',')
-                .map(coords => Number(coords))
-                .reverse() as mapboxgl.LngLatLike
-          ) as mapboxgl.LngLatLike[])
-        : null
+      return this.coordinates ? this.parseCoordinates(this.coordinates) : null
     },
     center() {
       return this.coordsArray ? turf.getCoords(turf.center(turf.points(this.coordsArray as turf.Position[]))) : null
@@ -102,12 +100,27 @@ export default defineComponent({
       return `map${self.crypto.getRandomValues(new Uint32Array(10))[0]}`
     }
   },
+  watch: {
+    coordinates: {
+      handler(newCoords, oldCoords) {
+        const newCoordinates = this.parseCoordinates(newCoords)
+        const oldCoordinates = this.parseCoordinates(oldCoords)
+        if (newCoordinates.length > oldCoordinates.length) {
+          this.markers?.push(this.createMarker(newCoordinates[newCoordinates.length - 1]))
+          this.setBoundsToCoords()
+        }
+        this.$nextTick(() => {
+          this.updateCoords()
+        })
+      }
+    }
+  },
   created() {
     mapboxgl.accessToken = this.accessToken
   },
   mounted() {
     console.log(this.center)
-    const map = new mapboxgl.Map({
+    this.map = new mapboxgl.Map({
       container: this.mapId, // container ID
       style: this.styleUrl, // style URL
       center: this.center || [0, 0], // starting position [lng, lat]
@@ -115,25 +128,57 @@ export default defineComponent({
       // projection: 'naturalEarth' // starting projection
     } as MapBoxOptionsExtended)
 
-    if (this.coordsArray) {
-      const markers = this.coordsArray.map((coords, ix) => {
-        const el = this.marker ? document.createElement('div') : undefined
-        if (el) {
-          el.className = 'marker'
-          el.style.backgroundImage = `url("${this.marker}")`
-        }
-        const marker = new mapboxgl.Marker(el).setLngLat(coords).addTo(map)
-        marker.getElement().onclick = () => this.$emit('markerClicked', marker, ix)
-        return marker
-      })
+    this.initCoords()
+  },
+  methods: {
+    parseCoordinates(coordinates: string) {
+      return coordinates.split('|').map(
+        loc =>
+          loc
+            .split(',')
+            .map(coords => Number(coords))
+            .reverse() as mapboxgl.LngLatLike
+      ) as mapboxgl.LngLatLike[]
+    },
+    initCoords() {
+      if (this.map && this.coordsArray) {
+        this.markers = this.coordsArray.map((coords, ix) => {
+          const marker = this.createMarker(coords)
+          marker.getElement().onclick = () => this.$emit('markerClicked', marker, ix)
+          return marker
+        })
 
-      this.$emit('mapLoaded', map, this.coordsArray)
+        this.$emit('mapLoaded', this.map, this.coordsArray)
 
-      if (this.coordsArray?.length > 1) {
-        map.fitBounds(this.bounds as mapboxgl.LngLatBoundsLike, { duration: 0, padding: 80 })
-        // map.setZoom(2)
+        this.setBoundsToCoords()
+      }
+    },
+    createMarker(coords: any) {
+      const el = this.marker ? document.createElement('div') : undefined
+      if (el) {
+        el.className = 'marker'
+        el.style.backgroundImage = `url("${this.marker}")`
+      }
+      return new mapboxgl.Marker(el).setLngLat(coords).addTo(this.map as mapboxgl.Map)
+    },
+    setBoundsToCoords() {
+      if (this.coordsArray && this.coordsArray?.length > 1) {
+        this.map?.fitBounds(this.bounds as mapboxgl.LngLatBoundsLike, { duration: 0, padding: 80 })
+      } else if (this.coordsArray) {
+        this.map?.setZoom(15)
+        this.map?.panTo(this?.coordsArray[0])
       } else {
-        map.setZoom(15)
+        this.map?.setZoom(15)
+      }
+    },
+    updateCoords() {
+      if (this.map && this.coordsArray) {
+        console.log(this.coordsArray)
+        this.coordsArray.map((coords, ix) => {
+          /* update marker coords */
+          this.markers?.[ix]?.setLngLat(coords)
+        })
+        this.$emit('coordinatesUpdated', this.map, this.coordsArray)
       }
     }
   }
