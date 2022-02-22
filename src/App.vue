@@ -1,6 +1,6 @@
 <template>
   <MapboxEmbed
-    coordinates="34.072799, -118.262034|34.077072, -118.269450|45.538357, -73.606518|43.679434, -79.457716|19.377078, -99.143622"
+    :coordinates="coordinatesString"
     map-style="satellite"
     zoom="3"
     :access-token="mapboxAccessToken"
@@ -9,6 +9,7 @@
     marker="/marker.svg"
     @map-loaded="onMapLoad"
     @marker-clicked="onMarkerClick"
+    @coordinates-updated="onCoordinatesUpdated"
   />
 </template>
 
@@ -16,9 +17,11 @@
 import { defineComponent } from 'vue'
 import MapboxEmbed from './components'
 import * as turf from '@turf/turf'
+import tracker from '@mxwllstn/tracker-vue'
 
 export default defineComponent({
   components: { MapboxEmbed },
+  mixins: [tracker],
   data() {
     return {
       mapboxAccessToken: import.meta.env.VITE_MAPBOX_ACCESS_TOKEN as string,
@@ -26,9 +29,46 @@ export default defineComponent({
       markerAlt: 'marker-alt.svg'
     }
   },
+  computed: {
+    defaultCoords() {
+      return ['34.072799, -118.262034', '34.077072, -118.269450']
+    },
+    locations() {
+      return this.trackerCoords ? [...this.defaultCoords, this.trackerCoords] : this.defaultCoords
+    },
+    coordinates(): any {
+      return this.locations ? this.locations.map((location: any) => location) : null
+    },
+    coordinatesString(): string {
+      return this.coordinates.join('|')
+    },
+    trackerCoords() {
+      return this.trackerPosition ? `${this.trackerPosition?.coords?.latitude}, ${this.trackerPosition?.coords?.longitude}` : null
+    },
+    track() {
+      const uri = window.location.search.substring(1)
+      const params = new URLSearchParams(uri)
+      return params.get('track') !== null
+    }
+  },
+  mounted() {
+    if (this.track) {
+      this.startTracking()
+    }
+  },
   methods: {
     onMapLoad(map: any, coords: any) {
-      const routes = {
+      this.addLines(map, coords)
+    },
+    onCoordinatesUpdated(map: any, coords: any) {
+      this.updateLines(map, coords)
+    },
+    updateLines(map: any, coords: any) {
+      const routes = this.parseRoutes(coords)
+      map.getSource('routes').setData(routes)
+    },
+    parseRoutes(coords: any[]) {
+      return {
         type: 'FeatureCollection',
         features: coords.map((_coords: any, idx: number) => {
           return {
@@ -40,6 +80,9 @@ export default defineComponent({
           }
         })
       }
+    },
+    addLines(map: any, coords: any) {
+      const routes = this.parseRoutes(coords)
 
       routes.features.forEach((route: { geometry: { coordinates: any } }) => {
         const lineDistance = turf.length(route as any)
