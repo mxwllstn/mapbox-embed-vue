@@ -151,6 +151,8 @@ export default defineComponent({
         this.$emit('mapLoaded', this.map, this.coordsArray)
 
         this.setBoundsToCoords()
+      } else if (this.map) {
+        this.$emit('mapLoaded', this.map, null)
       }
     },
     createMarker(coords: any) {
