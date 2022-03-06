@@ -137,4 +137,8 @@ export default defineComponent({
   width: 500px;
   height: 500px;
 }
+.mapboxgl-control-container {
+  display: none;
+}
+
 </style>

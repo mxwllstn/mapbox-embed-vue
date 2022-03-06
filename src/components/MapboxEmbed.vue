@@ -198,7 +198,4 @@ export default defineComponent({
   height: 40px;
   cursor: pointer;
 }
-.mapboxgl-control-container {
-  display: none;
-}
 </style>
