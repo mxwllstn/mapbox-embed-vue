@@ -6,7 +6,7 @@
     :access-token="mapboxAccessToken"
     width="100vw"
     height="100vh"
-    marker="/marker.svg"
+    :marker-icon="`/${markerIcon}`"
     @map-loaded="onMapLoad"
     @marker-clicked="onMarkerClick"
     @coordinates-updated="onCoordinatesUpdated"
@@ -25,8 +25,9 @@ export default defineComponent({
   data() {
     return {
       mapboxAccessToken: import.meta.env.VITE_MAPBOX_ACCESS_TOKEN as string,
-      marker: 'marker.svg',
-      markerAlt: 'marker-alt.svg'
+      markerIcon: 'marker.svg',
+      markerIconAlt: 'marker-alt.svg',
+      markers: null as any
     }
   },
   computed: {
@@ -57,8 +58,9 @@ export default defineComponent({
     }
   },
   methods: {
-    onMapLoad(map: any, coords: any) {
+    onMapLoad(map: any, coords: any, markers: any) {
       this.addLines(map, coords)
+      this.markers = markers
     },
     onCoordinatesUpdated(map: any, coords: any) {
       this.updateLines(map, coords)
@@ -120,10 +122,19 @@ export default defineComponent({
     toggleMarker(marker: any) {
       const el = marker.getElement()
       const { backgroundImage } = el.style
-      if (backgroundImage.includes(this.marker)) {
-        this.setBackgroundImage(el, this.markerAlt)
+      if (backgroundImage.includes(this.markerIcon)) {
+        this.setBackgroundImage(el, this.markerIconAlt)
       } else {
-        this.setBackgroundImage(el, this.marker)
+        this.setBackgroundImage(el, this.markerIcon)
+      }
+    },
+    toggleMarkerByIx(ix: any) {
+      const el = this.markers[ix].getElement()
+      const { backgroundImage } = el.style
+      if (backgroundImage.includes(this.markerIcon)) {
+        this.setBackgroundImage(el, this.markerIconAlt)
+      } else {
+        this.setBackgroundImage(el, this.markerIcon)
       }
     },
     setBackgroundImage(el: { style: { backgroundImage: string } }, image: string) {

@@ -49,7 +49,7 @@ export default defineComponent({
       type: String,
       default: '300px'
     },
-    marker: {
+    markerIcon: {
       type: String,
       default: null
     }
@@ -147,19 +147,17 @@ export default defineComponent({
           marker.getElement().onclick = () => this.$emit('markerClicked', marker, ix)
           return marker
         })
-
-        this.$emit('mapLoaded', this.map, this.coordsArray)
-
+        this.$emit('mapLoaded', this.map, this.coordsArray, this.markers)
         this.setBoundsToCoords()
       } else if (this.map) {
         this.$emit('mapLoaded', this.map, null)
       }
     },
     createMarker(coords: any) {
-      const el = this.marker ? document.createElement('div') : undefined
+      const el = this.markerIcon ? document.createElement('div') : undefined
       if (el) {
         el.className = 'marker'
-        el.style.backgroundImage = `url("${this.marker}")`
+        el.style.backgroundImage = `url("${this.markerIcon}")`
       }
       return new mapboxgl.Marker(el).setLngLat(coords).addTo(this.map as mapboxgl.Map)
     },
