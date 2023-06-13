@@ -135,6 +135,9 @@ export default defineComponent({
 
     this.initCoords()
   },
+  unmounted() {
+    this.map?.remove()
+  },
   methods: {
     parseCoordinates(coordinates: string) {
       return coordinates.split('|').map(
