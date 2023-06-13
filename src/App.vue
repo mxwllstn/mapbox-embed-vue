@@ -6,7 +6,7 @@
     :access-token="mapboxAccessToken"
     width="100vw"
     height="100vh"
-    :marker-icon="`/${markerIcon}`"
+    :marker-icons="[markerIcon, markerIconAlt]"
     @map-loaded="onMapLoad"
     @marker-clicked="onMarkerClick"
     @coordinates-updated="onCoordinatesUpdated"

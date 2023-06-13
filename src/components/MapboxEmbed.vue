@@ -52,6 +52,10 @@ export default defineComponent({
     markerIcon: {
       type: String,
       default: null
+    },
+    markerIcons: {
+      type: Array,
+      default: null
     }
   },
   emits: ['mapLoaded', 'markerClicked', 'coordinatesUpdated'],
@@ -106,7 +110,8 @@ export default defineComponent({
         const newCoordinates = this.parseCoordinates(newCoords)
         const oldCoordinates = this.parseCoordinates(oldCoords)
         if (newCoordinates.length > oldCoordinates.length) {
-          this.markers?.push(this.createMarker(newCoordinates[newCoordinates.length - 1]))
+          const ix = newCoordinates.length - 1
+          this.markers?.push(this.createMarker(newCoordinates[ix], ix))
           this.setBoundsToCoords()
         }
         this.$nextTick(() => {
@@ -143,7 +148,7 @@ export default defineComponent({
     initCoords() {
       if (this.map && this.coordsArray) {
         this.markers = this.coordsArray.map((coords, ix) => {
-          const marker = this.createMarker(coords)
+          const marker = this.createMarker(coords, ix)
           marker.getElement().onclick = () => this.$emit('markerClicked', marker, ix)
           return marker
         })
@@ -153,11 +158,12 @@ export default defineComponent({
         this.$emit('mapLoaded', this.map, null)
       }
     },
-    createMarker(coords: any) {
-      const el = this.markerIcon ? document.createElement('div') : undefined
+    createMarker(coords: any, ix: number) {
+      const el = this.markerIcons || this.markerIcon ? document.createElement('div') : undefined
+      const icon = this.markerIcons ? this.markerIcons[ix] : this.markerIcon
       if (el) {
         el.className = 'marker'
-        el.style.backgroundImage = `url("${this.markerIcon}")`
+        el.style.backgroundImage = `url("${icon}")`
       }
       return new mapboxgl.Marker(el).setLngLat(coords).addTo(this.map as mapboxgl.Map)
     },
