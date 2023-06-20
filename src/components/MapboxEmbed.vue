@@ -152,13 +152,13 @@ export default defineComponent({
       if (this.map && this.coordsArray) {
         this.markers = this.coordsArray.map((coords, ix) => {
           const marker = this.createMarker(coords, ix)
-          marker.getElement().onclick = () => this.$emit('markerClicked', marker, ix)
+          marker.getElement().onclick = () => this.$emit('markerClicked', [marker, ix])
           return marker
         })
-        this.$emit('mapLoaded', this.map, this.coordsArray, this.markers)
+        this.$emit('mapLoaded', [this.map, this.coordsArray, this.markers])
         this.setBoundsToCoords()
       } else if (this.map) {
-        this.$emit('mapLoaded', this.map, null)
+        this.$emit('mapLoaded', [this.map, null])
       }
     },
     createMarker(coords: any, ix: number) {
@@ -187,7 +187,7 @@ export default defineComponent({
           /* update marker coords */
           this.markers?.[ix]?.setLngLat(coords)
         })
-        this.$emit('coordinatesUpdated', this.map, this.coordsArray)
+        this.$emit('coordinatesUpdated', [this.map, this.coordsArray])
       }
     }
   }

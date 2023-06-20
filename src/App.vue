@@ -58,11 +58,11 @@ export default defineComponent({
     }
   },
   methods: {
-    onMapLoad(map: any, coords: any, markers: any) {
+    onMapLoad([map, coords, markers]: any): void {
       this.addLines(map, coords)
       this.markers = markers
     },
-    onCoordinatesUpdated(map: any, coords: any) {
+    onCoordinatesUpdated([map, coords]: any): void {
       this.updateLines(map, coords)
     },
     updateLines(map: any, coords: any) {
@@ -116,7 +116,7 @@ export default defineComponent({
         })
       })
     },
-    onMarkerClick(marker: any, ix: number) {
+    onMarkerClick([marker, ix]: any): void {
       this.toggleMarker(marker)
     },
     toggleMarker(marker: any) {
