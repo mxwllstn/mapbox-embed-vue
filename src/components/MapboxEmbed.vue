@@ -175,6 +175,7 @@ export default defineComponent({
       if (el) {
         el.className = 'marker'
         el.style.backgroundImage = `url("${icon}")`
+        el.id = 'marker' + ix
       }
       return new mapboxgl.Marker(el).setLngLat(coords).addTo(this.map as mapboxgl.Map)
     },
