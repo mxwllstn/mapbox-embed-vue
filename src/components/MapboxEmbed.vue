@@ -56,6 +56,14 @@ export default defineComponent({
     markerIcons: {
       type: Array,
       default: null
+    },
+    padding: {
+      type: Number,
+      default: 80
+    },
+    paddingRight: {
+      type: Number,
+      default: 80
     }
   },
   emits: ['mapLoaded', 'markerClicked', 'coordinatesUpdated'],
@@ -172,7 +180,7 @@ export default defineComponent({
     },
     setBoundsToCoords() {
       if (this.coordsArray && this.coordsArray?.length > 1) {
-        this.map?.fitBounds(this.bounds as mapboxgl.LngLatBoundsLike, { duration: 0, padding: 80 })
+        this.map?.fitBounds(this.bounds as mapboxgl.LngLatBoundsLike, { duration: 0, padding: {top: this.padding, bottom: this.padding, left: this.padding, right: this.paddingRight } })
       } else if (this.coordsArray) {
         this.map?.setZoom(15)
         this.map?.panTo(this?.coordsArray[0])
