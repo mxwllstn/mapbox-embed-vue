@@ -188,10 +188,10 @@ export default defineComponent({
       }
       return new mapboxgl.Marker(el).setLngLat(coords).addTo(this.map as mapboxgl.Map)
     },
-    setBoundsToCoords() {
+    setBoundsToCoords(duration = 0) {
       if (this.coordsArray && this.coordsArray?.length > 1) {
         this.map?.fitBounds(this.bounds as mapboxgl.LngLatBoundsLike, {
-          duration: 0,
+          duration,
           padding: { top: this.padding, bottom: this.padding, left: this.padding, right: this.paddingRight }
         })
       } else if (this.coordsArray) {
