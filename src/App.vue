@@ -10,6 +10,9 @@
     @map-loaded="onMapLoad"
     @marker-clicked="onMarkerClick"
     @coordinates-updated="onCoordinatesUpdated"
+    @map-moved="onMapMoved"
+    @map-zoomed="onMapZoomed"
+    @map-idled="onMapIdled"
   />
 </template>
 
@@ -61,6 +64,15 @@ export default defineComponent({
     onMapLoad([map, coords, markers]: any): void {
       this.addLines(map, coords)
       this.markers = markers
+    },
+    onMapMoved(): void {
+      console.log('map moved')
+    },
+    onMapZoomed(): void {
+      console.log('map zoomed')
+    },
+    onMapIdled(): void {
+      console.log('map idled')
     },
     onCoordinatesUpdated([map, coords]: any): void {
       this.updateLines(map, coords)

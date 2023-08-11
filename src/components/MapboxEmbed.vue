@@ -66,7 +66,7 @@ export default defineComponent({
       default: 80
     }
   },
-  emits: ['mapLoaded', 'markerClicked', 'coordinatesUpdated'],
+  emits: ['mapLoaded', 'markerClicked', 'coordinatesUpdated', 'mapMoved', 'mapZoomed', 'mapIdled'],
   data() {
     return {
       map: null as mapboxgl.Map | null,
@@ -158,6 +158,15 @@ export default defineComponent({
     },
     initCoords() {
       if (this.map && this.coordsArray) {
+        this.map.on('moveend', () => {
+          this.$emit('mapMoved')
+        })
+        this.map.on('zoomend', () => {
+          this.$emit('mapZoomed')
+        })
+        this.map.on('idle', () => {
+          this.$emit('mapIdled')
+        })
         this.markers = this.coordsArray.map((coords, ix) => {
           const marker = this.createMarker(coords, ix)
           marker.getElement().onclick = () => this.$emit('markerClicked', [marker, ix])
@@ -181,7 +190,10 @@ export default defineComponent({
     },
     setBoundsToCoords() {
       if (this.coordsArray && this.coordsArray?.length > 1) {
-        this.map?.fitBounds(this.bounds as mapboxgl.LngLatBoundsLike, { duration: 0, padding: {top: this.padding, bottom: this.padding, left: this.padding, right: this.paddingRight } })
+        this.map?.fitBounds(this.bounds as mapboxgl.LngLatBoundsLike, {
+          duration: 0,
+          padding: { top: this.padding, bottom: this.padding, left: this.padding, right: this.paddingRight }
+        })
       } else if (this.coordsArray) {
         this.map?.setZoom(15)
         this.map?.panTo(this?.coordsArray[0])
@@ -206,10 +218,12 @@ export default defineComponent({
 <style lang="scss">
 @import 'ress';
 @import 'mapbox-gl/dist/mapbox-gl.css';
+
 .map {
   width: 100%;
   height: 100%;
 }
+
 .marker {
   background-size: cover;
   width: 40px;
