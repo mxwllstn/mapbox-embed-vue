@@ -60,10 +60,6 @@ export default defineComponent({
     padding: {
       type: Number,
       default: 80
-    },
-    paddingRight: {
-      type: Number,
-      default: 80
     }
   },
   emits: ['mapLoaded', 'markerClicked', 'coordinatesUpdated', 'mapMoved', 'mapZoomed', 'mapIdled'],
@@ -188,11 +184,12 @@ export default defineComponent({
       }
       return new mapboxgl.Marker(el).setLngLat(coords).addTo(this.map as mapboxgl.Map)
     },
-    setBoundsToCoords(duration = 0) {
+    setBoundsToCoords(options?: { duration?: number, padding?: { top?: number, right?: number, bottom?: number, left?: number }}) {
+      const { duration, padding } = options || {}
       if (this.coordsArray && this.coordsArray?.length > 1) {
         this.map?.fitBounds(this.bounds as mapboxgl.LngLatBoundsLike, {
-          duration,
-          padding: { top: this.padding, bottom: this.padding, left: this.padding, right: this.paddingRight }
+          duration: duration || 0,
+          padding: { top: this.padding + (padding?.top || 0), bottom: this.padding + (padding?.bottom || 0), left: this.padding + (padding?.left || 0), right: this.padding + (padding?.right || 0) }
         })
       } else if (this.coordsArray) {
         this.map?.setZoom(15)
