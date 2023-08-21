@@ -66,7 +66,8 @@ export default defineComponent({
   data() {
     return {
       map: null as mapboxgl.Map | null,
-      markers: null as mapboxgl.Marker[] | null
+      markers: null as mapboxgl.Marker[] | null,
+      markerZIndex: 1
     }
   },
   computed: {
@@ -165,7 +166,12 @@ export default defineComponent({
         })
         this.markers = this.coordsArray.map((coords, ix) => {
           const marker = this.createMarker(coords, ix)
-          marker.getElement().onclick = () => this.$emit('markerClicked', [marker, ix])
+          const el = marker.getElement()
+          el.onclick = () => {
+            this.markerZIndex++
+            el.style.zIndex = String(this.markerZIndex);
+            this.$emit('markerClicked', [marker, ix])
+          }
           return marker
         })
         this.$emit('mapLoaded', [this.map, this.coordsArray, this.markers])
