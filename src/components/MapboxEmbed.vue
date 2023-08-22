@@ -113,7 +113,7 @@ export default defineComponent({
       }
     },
     mapId() {
-      return `map${self.crypto.getRandomValues(new Uint32Array(10))[0]}`
+      return `map${self?.crypto.getRandomValues(new Uint32Array(10))[0]}`
     }
   },
   watch: {
