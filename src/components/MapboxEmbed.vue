@@ -18,6 +18,7 @@ export type Styles =
   | 'satellite-streets'
   | 'navigation-day'
   | 'navigation-night'
+  | 'custom'
 
 interface MapBoxOptionsExtended extends mapboxgl.MapboxOptions {
   projection: string
@@ -60,6 +61,10 @@ export default defineComponent({
     padding: {
       type: Number,
       default: 80
+    },
+    customStyleUrl: {
+      type: String,
+      default: null
     }
   },
   emits: ['mapLoaded', 'markerClicked', 'coordinatesUpdated', 'mapMoved', 'mapZoomed', 'mapIdled'],
@@ -101,6 +106,8 @@ export default defineComponent({
           return 'mapbox://styles/mapbox/navigation-day-v1'
         case 'navigation-night':
           return 'mapbox://styles/mapbox/navigation-night-v1'
+        case 'custom':
+          return this.customStyleUrl || 'mapbox://styles/mapbox/streets-v11'
         default:
           return 'mapbox://styles/mapbox/streets-v11'
       }
@@ -132,6 +139,7 @@ export default defineComponent({
     console.log(this.center)
     this.map = new mapboxgl.Map({
       container: this.mapId, // container ID
+      projection: 'mercator',
       style: this.styleUrl, // style URL
       center: this.center || [0, 0], // starting position [lng, lat]
       zoom: this.startingZoom // starting zoom,

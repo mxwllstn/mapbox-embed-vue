@@ -1,7 +1,8 @@
 <template>
   <MapboxEmbed
     :coordinates="coordinatesString"
-    map-style="satellite"
+    map-style="custom"
+    :custom-style-url="mapboxCustomStyleUrl"
     zoom="3"
     :access-token="mapboxAccessToken"
     width="100vw"
@@ -28,6 +29,7 @@ export default defineComponent({
   data() {
     return {
       mapboxAccessToken: import.meta.env.VITE_MAPBOX_ACCESS_TOKEN as string,
+      mapboxCustomStyleUrl: import.meta.env.VITE_MAPBOX_CUSTOM_STYLE_URL as string,
       markerIcon: 'marker.svg',
       markerIconAlt: 'marker-alt.svg',
       markers: null as any
