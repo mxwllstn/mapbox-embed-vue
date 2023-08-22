@@ -72,7 +72,8 @@ export default defineComponent({
     return {
       map: null as mapboxgl.Map | null,
       markers: null as mapboxgl.Marker[] | null,
-      markerZIndex: 1
+      markerZIndex: 1,
+      mapId: null as string | null
     }
   },
   computed: {
@@ -111,9 +112,6 @@ export default defineComponent({
         default:
           return 'mapbox://styles/mapbox/streets-v11'
       }
-    },
-    mapId() {
-      return `map${crypto.getRandomValues(new Uint32Array(10))[0]}`
     }
   },
   watch: {
@@ -137,6 +135,7 @@ export default defineComponent({
   },
   mounted() {
     console.log(this.center)
+    this.mapId = `map${self.crypto.getRandomValues(new Uint32Array(10))[0]}`
     this.map = new mapboxgl.Map({
       container: this.mapId, // container ID
       projection: 'mercator',
