@@ -1,6 +1,6 @@
 <template>
   <div class="map-container" :style="{ width: width, height: height }">
-    <div :id="mapId" class="map"></div>
+    <div v-if="mapId" :id="mapId" class="map"></div>
   </div>
 </template>
 
