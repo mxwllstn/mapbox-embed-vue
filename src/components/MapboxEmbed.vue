@@ -134,18 +134,18 @@ export default defineComponent({
     mapboxgl.accessToken = this.accessToken
   },
   mounted() {
-    console.log(this.center)
     this.mapId = `map${self.crypto.getRandomValues(new Uint32Array(10))[0]}`
-    this.map = new mapboxgl.Map({
-      container: this.mapId, // container ID
-      projection: 'mercator',
-      style: this.styleUrl, // style URL
-      center: this.center || [0, 0], // starting position [lng, lat]
-      zoom: this.startingZoom // starting zoom,
-      // projection: 'naturalEarth' // starting projection
-    } as MapBoxOptionsExtended)
-
-    this.initCoords()
+    this.$nextTick(() => {
+      this.map = new mapboxgl.Map({
+        container: this.mapId, // container ID
+        projection: 'mercator',
+        style: this.styleUrl, // style URL
+        center: this.center || [0, 0], // starting position [lng, lat]
+        zoom: this.startingZoom // starting zoom,
+        // projection: 'naturalEarth' // starting projection
+      } as MapBoxOptionsExtended)
+      this.initCoords()
+    })
   },
   unmounted() {
     this.map?.remove()
@@ -197,7 +197,7 @@ export default defineComponent({
       }
       return new mapboxgl.Marker(el).setLngLat(coords).addTo(this.map as mapboxgl.Map)
     },
-    setBoundsToCoords(options?: { duration?: number, padding?: { top?: number, right?: number, bottom?: number, left?: number }}) {
+    setBoundsToCoords(options?: { duration?: number, padding?: { top?: number, right?: number, bottom?: number, left?: number } }) {
       const { duration, padding } = options || {}
       if (this.coordsArray && this.coordsArray?.length > 1) {
         this.map?.fitBounds(this.bounds as mapboxgl.LngLatBoundsLike, {
