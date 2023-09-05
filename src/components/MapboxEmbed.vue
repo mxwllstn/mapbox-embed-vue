@@ -62,6 +62,10 @@ export default defineComponent({
       type: String,
       default: 'center'
     },
+    markerLabels: {
+      type: Array,
+      default: null
+    },
     padding: {
       type: Number,
       default: 80
@@ -193,11 +197,13 @@ export default defineComponent({
     },
     createMarker(coords: any, ix: number) {
       const el = this.markerIcons || this.markerIcon ? document.createElement('div') : undefined
+
       const icon = this.markerIcons ? this.markerIcons[ix] : this.markerIcon
       if (el) {
         el.className = 'marker'
         el.style.backgroundImage = `url("${icon}")`
         el.id = 'marker' + ix
+        this.markerLabels && el.style.setProperty('--markerLabel', `"${this.markerLabels[ix]}"`)
       }
       return new mapboxgl.Marker({ element: el, anchor: this.markerAnchor as mapboxgl.Anchor }).setLngLat(coords).addTo(this.map as mapboxgl.Map)
     },
@@ -230,8 +236,12 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-@import 'ress';
 @import 'mapbox-gl/dist/mapbox-gl.css';
+
+body {
+  margin: 0px;
+  padding: 0px;
+}
 
 .map {
   width: 100%;
@@ -239,9 +249,16 @@ export default defineComponent({
 }
 
 .marker {
+  --markerLabel: 'test12';
   background-size: cover;
   width: 40px;
   height: 40px;
   cursor: pointer;
+  &::after {
+    content: var(--markerLabel);
+    position: absolute;
+    top: 0px;
+    left: 35px;
+  }
 }
 </style>

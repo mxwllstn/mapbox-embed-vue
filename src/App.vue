@@ -9,6 +9,7 @@
     height="100vh"
     :marker-icons="[markerIcon, markerIconAlt]"
     marker-anchor="center"
+    :marker-labels="markerLabels"
     @map-loaded="onMapLoad"
     @marker-clicked="onMarkerClick"
     @coordinates-updated="onCoordinatesUpdated"
@@ -42,6 +43,9 @@ export default defineComponent({
     },
     locations() {
       return this.trackerCoords ? [...this.defaultCoords, this.trackerCoords] : this.defaultCoords
+    },
+    markerLabels() {
+      return this.locations.map((_val, idx) => (idx + 1).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }))
     },
     coordinates(): any {
       return this.locations ? this.locations.map((location: any) => location) : null
@@ -166,5 +170,4 @@ export default defineComponent({
 .mapboxgl-control-container {
   display: none;
 }
-
 </style>
