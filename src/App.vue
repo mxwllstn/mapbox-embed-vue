@@ -1,22 +1,10 @@
 <template>
   <MapboxEmbed
-    :coordinates="coordinatesString"
-    map-style="custom"
-    :custom-style-url="mapboxCustomStyleUrl"
-    zoom="3"
-    :access-token="mapboxAccessToken"
-    width="100vw"
-    height="100vh"
-    :marker-icons="[markerIcon, markerIconAlt]"
-    marker-anchor="center"
-    :marker-labels="markerLabels"
-    @map-loaded="onMapLoad"
-    @marker-clicked="onMarkerClick"
-    @coordinates-updated="onCoordinatesUpdated"
-    @map-moved="onMapMoved"
-    @map-zoomed="onMapZoomed"
-    @map-idled="onMapIdled"
-  />
+:coordinates="coordinatesString" map-style="custom" :custom-style-url="mapboxCustomStyleUrl" zoom="3"
+    :access-token="mapboxAccessToken" width="100vw" height="100vh" :marker-icons="[markerIcon, markerIconAlt]"
+    marker-anchor="center" :marker-labels="markerLabels" @map-loaded="onMapLoad" @marker-clicked="onMarkerClick"
+    @coordinates-updated="onCoordinatesUpdated" @map-moved="onMapMoved" @map-zoomed="onMapZoomed"
+    @map-idled="onMapIdled" />
 </template>
 
 <script lang="ts">
@@ -167,7 +155,17 @@ export default defineComponent({
   width: 500px;
   height: 500px;
 }
+
 .mapboxgl-control-container {
   display: none;
+}
+
+.marker {
+  &::after {
+    content: var(--markerLabel);
+    position: absolute;
+    top: 0px;
+    left: 35px;
+  }
 }
 </style>

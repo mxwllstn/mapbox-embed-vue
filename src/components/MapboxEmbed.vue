@@ -259,16 +259,9 @@ body {
 }
 
 .marker {
-  --markerLabel: 'test12';
   background-size: cover;
   width: 40px;
   height: 40px;
   cursor: pointer;
-  &::after {
-    content: var(--markerLabel);
-    position: absolute;
-    top: 0px;
-    left: 35px;
-  }
 }
 </style>
