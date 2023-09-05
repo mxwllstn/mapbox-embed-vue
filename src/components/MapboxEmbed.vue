@@ -58,6 +58,10 @@ export default defineComponent({
       type: Array,
       default: null
     },
+    markerAnchor: {
+      type: String,
+      default: 'center'
+    },
     padding: {
       type: Number,
       default: 80
@@ -195,7 +199,7 @@ export default defineComponent({
         el.style.backgroundImage = `url("${icon}")`
         el.id = 'marker' + ix
       }
-      return new mapboxgl.Marker(el).setLngLat(coords).addTo(this.map as mapboxgl.Map)
+      return new mapboxgl.Marker({ element: el, anchor: this.markerAnchor as mapboxgl.Anchor }).setLngLat(coords).addTo(this.map as mapboxgl.Map)
     },
     setBoundsToCoords(options?: { duration?: number, padding?: { top?: number, right?: number, bottom?: number, left?: number } }) {
       const { duration, padding } = options || {}

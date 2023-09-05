@@ -8,6 +8,7 @@
     width="100vw"
     height="100vh"
     :marker-icons="[markerIcon, markerIconAlt]"
+    marker-anchor="center"
     @map-loaded="onMapLoad"
     @marker-clicked="onMarkerClick"
     @coordinates-updated="onCoordinatesUpdated"
