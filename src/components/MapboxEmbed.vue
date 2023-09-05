@@ -184,7 +184,7 @@ export default defineComponent({
           const el = marker.getElement()
           el.onclick = () => {
             this.markerZIndex++
-            el.style.zIndex = String(this.markerZIndex);
+            el.style.zIndex = String(this.markerZIndex)
             this.$emit('markerClicked', [marker, ix])
           }
           return marker
@@ -205,14 +205,24 @@ export default defineComponent({
         el.id = 'marker' + ix
         this.markerLabels && el.style.setProperty('--markerLabel', `"${this.markerLabels[ix]}"`)
       }
-      return new mapboxgl.Marker({ element: el, anchor: this.markerAnchor as mapboxgl.Anchor }).setLngLat(coords).addTo(this.map as mapboxgl.Map)
+      return new mapboxgl.Marker({ element: el, anchor: this.markerAnchor as mapboxgl.Anchor })
+        .setLngLat(coords)
+        .addTo(this.map as mapboxgl.Map)
     },
-    setBoundsToCoords(options?: { duration?: number, padding?: { top?: number, right?: number, bottom?: number, left?: number } }) {
+    setBoundsToCoords(options?: {
+      duration?: number
+      padding?: { top?: number; right?: number; bottom?: number; left?: number }
+    }) {
       const { duration, padding } = options || {}
       if (this.coordsArray && this.coordsArray?.length > 1) {
         this.map?.fitBounds(this.bounds as mapboxgl.LngLatBoundsLike, {
           duration: duration || 0,
-          padding: { top: this.padding + (padding?.top || 0), bottom: this.padding + (padding?.bottom || 0), left: this.padding + (padding?.left || 0), right: this.padding + (padding?.right || 0) }
+          padding: {
+            top: this.padding + (padding?.top || 0),
+            bottom: this.padding + (padding?.bottom || 0),
+            left: this.padding + (padding?.left || 0),
+            right: this.padding + (padding?.right || 0)
+          }
         })
       } else if (this.coordsArray) {
         this.map?.setZoom(15)
