@@ -172,6 +172,59 @@ export default defineComponent({
     },
     initCoords() {
       if (this.map && this.coordsArray) {
+        this.map.on('load', () => {
+          this.map?.addSource('points', {
+            cluster: true,
+            clusterMaxZoom: 14, // Max zoom to cluster points on
+            clusterRadius: 50, // Radius of each cluster when clustering points (defaults to 50),
+            type: 'geojson',
+            data: {
+              type: 'FeatureCollection',
+              features: this.coordsArray
+                ? this.coordsArray.map((coords: mapboxgl.LngLatLike, ix: number) => {
+                    console.log(coords)
+                    return {
+                      type: 'Feature',
+                      properties: {
+                        id: ix
+                      },
+                      geometry: {
+                        type: 'Point',
+                        coordinates: coords as any
+                      }
+                    }
+                  })
+                : []
+            }
+          })
+
+          const marker = 'http://localhost:3000/marker.png'
+          this.map?.loadImage(marker as any, (error, image) => {
+            this.map?.addImage('marker', image as any)
+          })
+          const markerAlt = 'http://localhost:3000/marker-alt.png'
+          this.map?.loadImage(markerAlt as any, (error, image) => {
+            this.map?.addImage('marker-alt', image as any)
+          })
+          this.map?.addLayer({
+            id: 'points',
+            type: 'symbol',
+            source: 'points',
+            layout: {
+              'icon-image': 'marker-alt',
+              'icon-size': 0.25,
+              'text-field': ['get', 'title'],
+              'text-font': ['Open Sans Semibold', 'Arial Unicode MS Bold'],
+              'text-offset': [0, 1.25],
+              'text-anchor': 'top'
+            }
+          })
+
+          this.map?.on('click', 'points', e => {
+            console.log(e)
+            console.log(e.features)
+          })
+        })
         this.map.on('moveend', () => {
           this.$emit('mapMoved')
         })
@@ -181,16 +234,17 @@ export default defineComponent({
         this.map.on('idle', () => {
           this.$emit('mapIdled')
         })
-        this.markers = this.coordsArray.map((coords, ix) => {
-          const marker = this.createMarker(coords, ix)
-          const el = marker.getElement()
-          el.onclick = () => {
-            this.markerZIndex++
-            el.style.zIndex = String(this.markerZIndex)
-            this.$emit('markerClicked', [marker, ix])
-          }
-          return marker
-        })
+
+        // this.markers = this.coordsArray.map((coords, ix) => {
+        //   const marker = this.createMarker(coords, ix)
+        //   const el = marker.getElement()
+        //   el.onclick = () => {
+        //     this.markerZIndex++
+        //     el.style.zIndex = String(this.markerZIndex)
+        //     this.$emit('markerClicked', [marker, ix])
+        //   }
+        //   return marker
+        // })
         this.$emit('mapLoaded', [this.map, this.coordsArray, this.markers])
         this.setBoundsToCoords()
       } else if (this.map) {
