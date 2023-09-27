@@ -152,6 +152,8 @@ export default defineComponent({
         zoom: this.startingZoom // starting zoom,
         // projection: 'naturalEarth' // starting projection
       } as MapBoxOptionsExtended)
+      this.map.dragRotate.disable()
+      this.map.touchZoomRotate.disableRotation()
       this.initCoords()
     })
   },
