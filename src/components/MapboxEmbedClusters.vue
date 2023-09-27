@@ -219,6 +219,13 @@ export default defineComponent({
           })
 
           this.map?.on('click', 'points', e => {
+            // const feature = e?.features?.[0]
+            // const id = feature?.properties?.id
+            // console.log ({ id })
+            // console.log(this.coordsArray?.[id])
+            // this.map?.getSource('points').setData({
+
+            // })
             console.log(e)
             console.log(e.features)
           })
