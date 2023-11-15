@@ -21,7 +21,7 @@ export type Styles =
   | 'custom'
 
 interface MapBoxOptionsExtended extends mapboxgl.MapboxOptions {
-  projection: string
+  projection: any
 }
 
 export default defineComponent({
