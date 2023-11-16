@@ -8,7 +8,7 @@
     "dist"
   ],
   "main": "./dist/mapbox-embed.umd.js",
-  "types": "./dist/src/components/index.d.ts",
+  "types": "./dist/components/index.d.ts",
   "module": "./dist/mapbox-embed.es.js",
   "exports": {
     ".": {
