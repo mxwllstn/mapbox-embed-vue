@@ -21,7 +21,7 @@ export type Styles =
   | 'custom'
 
 interface MapBoxOptionsExtended extends mapboxgl.MapboxOptions {
-  projection: string
+  projection: any
 }
 
 export default defineComponent({
@@ -73,13 +73,9 @@ export default defineComponent({
     customStyleUrl: {
       type: String,
       default: null
-    },
-    clusters: {
-      type: Boolean,
-      default: false
     }
   },
-  emits: ['mapLoaded', 'markerClicked', 'coordinatesUpdated', 'mapMoved', 'mapZoomed', 'mapIdled', 'map-loaded', 'marker-clicked'],
+  emits: ['mapLoaded', 'markerClicked', 'coordinatesUpdated', 'mapMoved', 'mapZoomed', 'mapIdled'],
   data() {
     return {
       map: null as mapboxgl.Map | null,
@@ -156,6 +152,8 @@ export default defineComponent({
         zoom: this.startingZoom // starting zoom,
         // projection: 'naturalEarth' // starting projection
       } as MapBoxOptionsExtended)
+      this.map.dragRotate.disable()
+      this.map.touchZoomRotate.disableRotation()
       this.initCoords()
     })
   },
@@ -249,23 +247,6 @@ export default defineComponent({
 })
 </script>
 
-<style lang="scss">
-@import 'mapbox-gl/dist/mapbox-gl.css';
+<style lang="scss" scoped>
 
-body {
-  margin: 0px;
-  padding: 0px;
-}
-
-.map {
-  width: 100%;
-  height: 100%;
-}
-
-.marker {
-  background-size: cover;
-  width: 40px;
-  height: 40px;
-  cursor: pointer;
-}
 </style>

@@ -21,7 +21,7 @@ export type Styles =
   | 'custom'
 
 interface MapBoxOptionsExtended extends mapboxgl.MapboxOptions {
-  projection: string
+  projection: any
 }
 
 export default defineComponent({
@@ -306,23 +306,5 @@ export default defineComponent({
 })
 </script>
 
-<style lang="scss">
-@import 'mapbox-gl/dist/mapbox-gl.css';
-
-body {
-  margin: 0px;
-  padding: 0px;
-}
-
-.map {
-  width: 100%;
-  height: 100%;
-}
-
-.marker {
-  background-size: cover;
-  width: 40px;
-  height: 40px;
-  cursor: pointer;
-}
+<style lang="scss" scoped>
 </style>

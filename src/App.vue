@@ -151,6 +151,9 @@ export default defineComponent({
 })
 </script>
 <style lang="scss">
+body {
+  margin: 0px;
+}
 .container {
   width: 500px;
   height: 500px;

@@ -107,15 +107,9 @@ export default defineComponent({
 <style lang="scss">
 @import 'mapbox-gl/dist/mapbox-gl.css';
 
-body {
-  margin: 0px;
-  padding: 0px;
-}
-
 .map {
   width: 100%;
   height: 100%;
-}
 
 .marker {
   background-size: cover;
@@ -123,4 +117,6 @@ body {
   height: 40px;
   cursor: pointer;
 }
+}
+
 </style>
