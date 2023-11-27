@@ -30,6 +30,10 @@ export default defineComponent({
       type: String,
       default: null
     },
+    showMarkers: {
+      type: Boolean,
+      default: true
+    },
     zoom: {
       type: String,
       default: '1'
@@ -129,7 +133,7 @@ export default defineComponent({
         const oldCoordinates = this.parseCoordinates(oldCoords)
         if (newCoordinates.length > oldCoordinates.length) {
           const ix = newCoordinates.length - 1
-          this.markers?.push(this.createMarker(newCoordinates[ix], ix))
+          this.showMarkers && this.markers?.push(this.createMarker(newCoordinates[ix], ix))
           this.setBoundsToCoords()
         }
         this.$nextTick(() => {
@@ -181,7 +185,7 @@ export default defineComponent({
         this.map.on('idle', () => {
           this.$emit('mapIdled')
         })
-        this.markers = this.coordsArray.map((coords, ix) => {
+        this.markers = this.showMarkers ? this.coordsArray.map((coords, ix) => {
           const marker = this.createMarker(coords, ix)
           const el = marker.getElement()
           el.onclick = () => {
@@ -190,7 +194,7 @@ export default defineComponent({
             this.$emit('markerClicked', [marker, ix])
           }
           return marker
-        })
+        }) : []
         this.$emit('mapLoaded', [this.map, this.coordsArray, this.markers])
         this.setBoundsToCoords()
       } else if (this.map) {
