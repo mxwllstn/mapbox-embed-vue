@@ -127,7 +127,7 @@ export default defineComponent({
       this.toggleMarker(marker)
     },
     toggleMarker(marker: any) {
-      const el = marker.getElement()
+      const el = marker.getElement().firstChild
       const { backgroundImage } = el.style
       if (backgroundImage.includes(this.markerIcon)) {
         this.setBackgroundImage(el, this.markerIconAlt)
@@ -166,6 +166,13 @@ export default defineComponent({
     position: absolute;
     top: 0px;
     left: 35px;
+  }
+}
+
+@keyframes spin {
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
   }
 }
 </style>

@@ -203,15 +203,17 @@ export default defineComponent({
     },
     createMarker(coords: any, ix: number) {
       const el = this.markerIcons || this.markerIcon ? document.createElement('div') : undefined
-
       const icon = this.markerIcons ? this.markerIcons[ix] : this.markerIcon
       if (el) {
         el.className = 'marker'
-        el.style.backgroundImage = `url("${icon}")`
+        const markerIcon = document.createElement('div')
+        markerIcon.className = 'marker-icon' as any
+        markerIcon.style.backgroundImage = `url("${icon}")` as any
+        el.appendChild(markerIcon)
         el.id = 'marker' + ix
         this.markerLabels && el.style.setProperty('--markerLabel', `"${this.markerLabels[ix]}"`)
       }
-      return new mapboxgl.Marker({ element: el, anchor: this.markerAnchor as mapboxgl.Anchor })
+      return new mapboxgl.Marker({ element: el, anchor: this.markerAnchor as mapboxgl.Anchor, rotationAlignment: 'map' })
         .setLngLat(coords)
         .addTo(this.map as mapboxgl.Map)
     },
@@ -265,9 +267,16 @@ body {
 }
 
 .marker {
-  background-size: cover;
   width: 40px;
   height: 40px;
   cursor: pointer;
+
+  .marker-icon {
+    width: 100%;
+    height: 100%;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+  }
 }
 </style>
