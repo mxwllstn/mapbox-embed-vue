@@ -49,11 +49,11 @@ export default defineComponent({
     },
     width: {
       type: String,
-      default: '300px'
+      default: null
     },
     height: {
       type: String,
-      default: '300px'
+      default: null
     },
     markerIcon: {
       type: String,

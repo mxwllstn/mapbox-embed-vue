@@ -2,7 +2,7 @@
   <div class="container">
     <MapboxEmbed
   :coordinates="coordinatesString" map-style="custom" :custom-style-url="mapboxCustomStyleUrl" zoom="3"
-      :access-token="mapboxAccessToken" width="100vw" height="100vh" :marker-icons="[markerIcon, markerIconAlt]"
+      :access-token="mapboxAccessToken" :marker-icons="[markerIcon, markerIconAlt]"
       marker-anchor="center" :marker-labels="markerLabels" @map-loaded="onMapLoad" @marker-clicked="onMarkerClick"
       @coordinates-updated="onCoordinatesUpdated" @map-moved="onMapMoved" @map-zoomed="onMapZoomed"
       @map-idled="onMapIdled" />
