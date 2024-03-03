@@ -122,6 +122,7 @@ export default defineComponent({
           }
         })
       })
+      map.resize()
     },
     onMarkerClick([marker, ix]: any): void {
       this.toggleMarker(marker)
