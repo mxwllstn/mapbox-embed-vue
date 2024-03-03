@@ -7,6 +7,7 @@
   "files": [
     "dist"
   ],
+  "type": "module",
   "main": "./dist/mapbox-embed.umd.js",
   "types": "./dist/components/index.d.ts",
   "module": "./dist/mapbox-embed.es.js",
