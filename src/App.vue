@@ -126,7 +126,7 @@ export default defineComponent({
       })
       map.resize()
     },
-    onMarkerClick([marker, ix]: any): void {
+    onMarkerClick([marker]: any): void {
       this.toggleMarker(marker)
     },
     toggleMarker(marker: any) {
