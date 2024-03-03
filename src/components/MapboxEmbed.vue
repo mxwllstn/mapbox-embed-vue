@@ -1,7 +1,8 @@
 <template>
-  <div class="map-container" :style="{ width: width, height: height }">
+  <div v-if="useContainer" class="map-container" :style="{ width, height }">
     <div v-if="mapId" :id="mapId" class="map"></div>
   </div>
+  <div v-else-if="mapId" :id="mapId" class="map" />
 </template>
 
 <script lang="ts">
@@ -89,6 +90,9 @@ export default defineComponent({
     }
   },
   computed: {
+    useContainer() {
+      return this.width || this.height
+    },
     coordsArray() {
       return this.coordinates ? this.parseCoordinates(this.coordinates) : null
     },
