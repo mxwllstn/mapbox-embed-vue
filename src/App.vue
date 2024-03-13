@@ -155,8 +155,8 @@ export default defineComponent({
 </script>
 <style lang="scss">
 .container {
-  width: 500px;
-  height: 500px;
+  width: 100vw;
+  height: 100vh;
 }
 
 .mapboxgl-control-container {
