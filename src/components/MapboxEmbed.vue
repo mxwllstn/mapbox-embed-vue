@@ -5,11 +5,10 @@
   <div v-else-if="mapId" :id="mapId" class="map" />
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
+<script lang="ts" setup>
 import mapboxgl from 'mapbox-gl'
 import * as turf from '@turf/turf'
-
+import { ref, computed, onMounted, onBeforeMount, watch, onUnmounted, nextTick } from 'vue'
 export type Styles =
   | 'streets'
   | 'outdoors'
@@ -25,236 +24,222 @@ interface MapBoxOptionsExtended extends mapboxgl.MapboxOptions {
   projection: any
 }
 
-export default defineComponent({
-  props: {
-    coordinates: {
-      type: String,
-      default: null
-    },
-    showMarkers: {
-      type: Boolean,
-      default: true
-    },
-    zoom: {
-      type: String,
-      default: '1'
-    },
-    mapStyle: {
-      type: String,
-      default: 'streets'
-    },
-    accessToken: {
-      type: String,
-      default: null
-    },
-    width: {
-      type: String,
-      default: null
-    },
-    height: {
-      type: String,
-      default: null
-    },
-    markerIcon: {
-      type: String,
-      default: null
-    },
-    markerIcons: {
-      type: Array,
-      default: null
-    },
-    markerAnchor: {
-      type: String,
-      default: 'center'
-    },
-    markerLabels: {
-      type: Array,
-      default: null
-    },
-    padding: {
-      type: Number,
-      default: 80
-    },
-    customStyleUrl: {
-      type: String,
-      default: null
-    }
+const props = defineProps({
+  coordinates: {
+    type: String,
+    default: null
   },
-  emits: ['mapLoaded', 'markerClicked', 'coordinatesUpdated', 'mapMoved', 'mapZoomed', 'mapIdled'],
-  data() {
-    return {
-      map: null as mapboxgl.Map | null,
-      markers: null as mapboxgl.Marker[] | null,
-      markerZIndex: 1,
-      mapId: null as string | null
-    }
+  showMarkers: {
+    type: Boolean,
+    default: true
   },
-  computed: {
-    useContainer() {
-      return this.width || this.height
-    },
-    coordsArray() {
-      return this.coordinates ? this.parseCoordinates(this.coordinates) : null
-    },
-    center() {
-      return this.coordsArray ? turf.getCoords(turf.center(turf.points(this.coordsArray as turf.Position[]))) : null
-    },
-    bounds() {
-      return turf.bbox(turf.lineString(this.coordsArray as turf.Position[]))
-    },
-    startingZoom() {
-      return Number(this.zoom)
-    },
-    styleUrl() {
-      switch (this.mapStyle as Styles) {
-        case 'streets':
-          return 'mapbox://styles/mapbox/streets-v11'
-        case 'outdoors':
-          return 'mapbox://styles/mapbox/outdoors-v11'
-        case 'light':
-          return 'mapbox://styles/mapbox/light-v10'
-        case 'dark':
-          return 'mapbox://styles/mapbox/dark-v10'
-        case 'satellite':
-          return 'mapbox://styles/mapbox/satellite-v9'
-        case 'satellite-streets':
-          return 'mapbox://styles/mapbox/satellite-streets-v11'
-        case 'navigation-day':
-          return 'mapbox://styles/mapbox/navigation-day-v1'
-        case 'navigation-night':
-          return 'mapbox://styles/mapbox/navigation-night-v1'
-        case 'custom':
-          return this.customStyleUrl || 'mapbox://styles/mapbox/streets-v11'
-        default:
-          return 'mapbox://styles/mapbox/streets-v11'
-      }
-    }
+  zoom: {
+    type: String,
+    default: '1'
   },
-  watch: {
-    coordinates: {
-      handler(newCoords, oldCoords) {
-        const newCoordinates = this.parseCoordinates(newCoords)
-        const oldCoordinates = this.parseCoordinates(oldCoords)
-        if (newCoordinates.length > oldCoordinates.length) {
-          const ix = newCoordinates.length - 1
-          this.showMarkers && this.markers?.push(this.createMarker(newCoordinates[ix], ix))
-          this.setBoundsToCoords()
-        }
-        this.$nextTick(() => {
-          this.updateCoords()
-        })
-      }
-    }
+  mapStyle: {
+    type: String,
+    default: 'streets'
   },
-  created() {
-    mapboxgl.accessToken = this.accessToken
+  accessToken: {
+    type: String,
+    default: null
   },
-  mounted() {
-    this.mapId = `map${self.crypto.getRandomValues(new Uint32Array(10))[0]}`
-    this.$nextTick(() => {
-      this.map = new mapboxgl.Map({
-        container: this.mapId, // container ID
-        projection: 'mercator',
-        style: this.styleUrl, // style URL
-        center: this.center || [0, 0], // starting position [lng, lat]
-        zoom: this.startingZoom // starting zoom,
-        // projection: 'naturalEarth' // starting projection
-      } as MapBoxOptionsExtended)
-      this.map.dragRotate.disable()
-      this.map.touchZoomRotate.disableRotation()
-      this.initCoords()
-    })
+  width: {
+    type: String,
+    default: null
   },
-  unmounted() {
-    this.map?.remove()
+  height: {
+    type: String,
+    default: null
   },
-  methods: {
-    parseCoordinates(coordinates: string) {
-      return coordinates.split('|').map(
-        loc =>
-          loc
-            .split(',')
-            .map(coords => Number(coords))
-            .reverse() as mapboxgl.LngLatLike
-      ) as mapboxgl.LngLatLike[]
-    },
-    initCoords() {
-      if (this.map && this.coordsArray) {
-        this.map.on('moveend', () => {
-          this.$emit('mapMoved')
-        })
-        this.map.on('zoomend', () => {
-          this.$emit('mapZoomed')
-        })
-        this.map.on('idle', () => {
-          this.$emit('mapIdled')
-        })
-        this.markers = this.showMarkers ? this.coordsArray.map((coords, ix) => {
-          const marker = this.createMarker(coords, ix)
-          const el = marker.getElement()
-          el.onclick = () => {
-            this.markerZIndex++
-            el.style.zIndex = String(this.markerZIndex)
-            this.$emit('markerClicked', [marker, ix])
-          }
-          return marker
-        }) : []
-        this.$emit('mapLoaded', [this.map, this.coordsArray, this.markers])
-        this.setBoundsToCoords()
-      } else if (this.map) {
-        this.$emit('mapLoaded', [this.map, null])
-      }
-    },
-    createMarker(coords: any, ix: number) {
-      const el = this.markerIcons || this.markerIcon ? document.createElement('div') : undefined
-      const icon = this.markerIcons ? this.markerIcons[ix] : this.markerIcon
-      if (el) {
-        el.className = 'marker'
-        const markerIcon = document.createElement('div')
-        markerIcon.className = 'marker-icon' as any
-        markerIcon.style.backgroundImage = `url("${icon}")` as any
-        el.appendChild(markerIcon)
-        el.id = 'marker' + ix
-        this.markerLabels && el.style.setProperty('--markerLabel', `"${this.markerLabels[ix]}"`)
-      }
-      return new mapboxgl.Marker({ element: el, anchor: this.markerAnchor as mapboxgl.Anchor, rotationAlignment: 'map' })
-        .setLngLat(coords)
-        .addTo(this.map as mapboxgl.Map)
-    },
-    setBoundsToCoords(options?: {
-      duration?: number
-      padding?: { top?: number; right?: number; bottom?: number; left?: number }
-    }) {
-      const { duration, padding } = options || {}
-      if (this.coordsArray && this.coordsArray?.length > 1) {
-        this.map?.fitBounds(this.bounds as mapboxgl.LngLatBoundsLike, {
-          duration: duration || 0,
-          padding: {
-            top: this.padding + (padding?.top || 0),
-            bottom: this.padding + (padding?.bottom || 0),
-            left: this.padding + (padding?.left || 0),
-            right: this.padding + (padding?.right || 0)
-          }
-        })
-      } else if (this.coordsArray) {
-        this.map?.setZoom(15)
-        this.map?.panTo(this?.coordsArray[0])
-      } else {
-        this.map?.setZoom(15)
-      }
-    },
-    updateCoords() {
-      if (this.map && this.coordsArray) {
-        console.log(this.coordsArray)
-        this.coordsArray.map((coords, ix) => {
-          /* update marker coords */
-          this.markers?.[ix]?.setLngLat(coords)
-        })
-        this.$emit('coordinatesUpdated', [this.map, this.coordsArray])
-      }
-    }
+  markerIcon: {
+    type: String,
+    default: null
+  },
+  markerIcons: {
+    type: Array,
+    default: null
+  },
+  markerAnchor: {
+    type: String,
+    default: 'center'
+  },
+  markerLabels: {
+    type: Array,
+    default: null
+  },
+  padding: {
+    type: Number,
+    default: 80
+  },
+  customStyleUrl: {
+    type: String,
+    default: null
   }
 })
+const emit = defineEmits(['mapLoaded', 'markerClicked', 'coordinatesUpdated', 'mapMoved', 'mapZoomed', 'mapIdled'])
+
+const map = ref()
+const markers = ref()
+const markerZIndex = ref(1)
+const mapId = ref()
+
+const useContainer = computed(() => props.width || props.height)
+const coordsArray = computed(() => props.coordinates && mapId.value ? parseCoordinates(props.coordinates) : null)
+const center = computed(() => coordsArray.value ? turf.getCoords(turf.center(turf.points(coordsArray.value as turf.Position[]))) : null)
+const bounds = computed(() => turf.bbox(turf.lineString(coordsArray.value as turf.Position[])))
+const startingZoom = computed(() => Number(props.zoom))
+const styleUrl = computed(() => {
+  switch (props.mapStyle as Styles) {
+    case 'streets':
+      return 'mapbox://styles/mapbox/streets-v11'
+    case 'outdoors':
+      return 'mapbox://styles/mapbox/outdoors-v11'
+    case 'light':
+      return 'mapbox://styles/mapbox/light-v10'
+    case 'dark':
+      return 'mapbox://styles/mapbox/dark-v10'
+    case 'satellite':
+      return 'mapbox://styles/mapbox/satellite-v9'
+    case 'satellite-streets':
+      return 'mapbox://styles/mapbox/satellite-streets-v11'
+    case 'navigation-day':
+      return 'mapbox://styles/mapbox/navigation-day-v1'
+    case 'navigation-night':
+      return 'mapbox://styles/mapbox/navigation-night-v1'
+    case 'custom':
+      return props.customStyleUrl || 'mapbox://styles/mapbox/streets-v11'
+    default:
+      return 'mapbox://styles/mapbox/streets-v11'
+  }
+})
+
+watch(coordsArray, async (newCoords, oldCoords) => {
+  if (newCoords && oldCoords) {
+    const newCoordinates = parseCoordinates(newCoords as any)
+    const oldCoordinates = parseCoordinates(oldCoords as any)
+    if (newCoordinates.length > oldCoordinates.length) {
+      const ix = newCoordinates.length - 1
+      props.showMarkers && markers.value?.push(createMarker(newCoordinates[ix], ix))
+      setBoundsToCoords()
+    }
+    await nextTick()
+    updateCoords()
+  }
+})
+
+onBeforeMount(() => {
+  mapboxgl.accessToken = props.accessToken
+})
+
+onMounted(async () => {
+  console.log(props.coordinates)
+  mapId.value = `map${self.crypto.getRandomValues(new Uint32Array(10))[0]}`
+  await nextTick()
+  map.value = new mapboxgl.Map({
+    container: mapId.value, // container ID
+    projection: 'mercator',
+    style: styleUrl.value, // style URL
+    center: center.value || [0, 0], // starting position [lng, lat]
+    zoom: startingZoom.value // starting zoom,
+    // projection: 'naturalEarth' // starting projection
+  } as MapBoxOptionsExtended)
+  map.value.dragRotate.disable()
+  map.value.touchZoomRotate.disableRotation()
+  initCoords()
+})
+
+onUnmounted(() => {
+  map.value?.remove()
+})
+
+
+const parseCoordinates = (coordString: string) => {
+  return coordString.split('|').map(
+    loc =>
+      loc
+        .split(',')
+        .map(coords => Number(coords))
+        .reverse() as mapboxgl.LngLatLike
+  ) as mapboxgl.LngLatLike[]
+}
+const initCoords = () => {
+  if (map.value && coordsArray.value) {
+    map.value.on('moveend', () => {
+      emit('mapMoved')
+    })
+    map.value.on('zoomend', () => {
+      emit('mapZoomed')
+    })
+    map.value.on('idle', () => {
+      emit('mapIdled')
+    })
+    markers.value = props.showMarkers ? coordsArray.value.map((coords, ix) => {
+      const marker = createMarker(coords, ix)
+      const el = marker.getElement()
+      el.onclick = () => {
+        markerZIndex.value++
+        el.style.zIndex = String(markerZIndex.value)
+        emit('markerClicked', [marker, ix])
+      }
+      return marker
+    }) : []
+    emit('mapLoaded', [map.value, coordsArray.value, markers.value])
+    setBoundsToCoords()
+  } else if (map.value) {
+    emit('mapLoaded', [map.value, null])
+  }
+}
+const createMarker = (coords: any, ix: number) => {
+  const el = props.markerIcons || props.markerIcon ? document.createElement('div') : undefined
+  const icon = props.markerIcons ? props.markerIcons[ix] : props.markerIcon
+  if (el) {
+    el.className = 'marker'
+    const markerIcon = document.createElement('div')
+    markerIcon.className = 'marker-icon' as any
+    markerIcon.style.backgroundImage = `url("${icon}")` as any
+    el.appendChild(markerIcon)
+    el.id = 'marker' + ix
+    props.markerLabels && el.style.setProperty('--markerLabel', `"${props.markerLabels[ix]}"`)
+  }
+  return new mapboxgl.Marker({ element: el, anchor: props.markerAnchor as mapboxgl.Anchor, rotationAlignment: 'map' })
+    .setLngLat(coords)
+    .addTo(map.value as mapboxgl.Map)
+}
+const setBoundsToCoords = (options?: {
+  duration?: number
+  padding?: { top?: number; right?: number; bottom?: number; left?: number }
+}) => {
+  const { duration, padding } = options || {}
+  if (coordsArray.value && coordsArray.value?.length > 1) {
+    map.value?.fitBounds(bounds.value as mapboxgl.LngLatBoundsLike, {
+      duration: duration || 0,
+      padding: {
+        top: props.padding + (padding?.top || 0),
+        bottom: props.padding + (padding?.bottom || 0),
+        left: props.padding + (padding?.left || 0),
+        right: props.padding + (padding?.right || 0)
+      }
+    })
+  } else if (coordsArray.value) {
+    map.value?.setZoom(15)
+    map.value?.panTo(coordsArray.value[0])
+  } else {
+    map.value?.setZoom(15)
+  }
+}
+const updateCoords = () => {
+  if (map.value && coordsArray.value) {
+    console.log(coordsArray.value)
+    coordsArray.value.map((coords, ix) => {
+      /* update marker coords */
+      markers.value?.[ix]?.setLngLat(coords)
+    })
+    emit('coordinatesUpdated', [map.value, coordsArray.value])
+  }
+}
+
 </script>
 
 <style lang="scss">
