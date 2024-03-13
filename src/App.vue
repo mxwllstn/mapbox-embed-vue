@@ -13,8 +13,8 @@ import { ref, computed } from 'vue'
 import MapboxEmbed from './components/MapboxEmbed.vue'
 import * as turf from '@turf/turf'
 
-const mapboxAccessToken = ref(process.env.VITE_MAPBOX_ACCESS_TOKEN)
-const mapboxCustomStyleUrl = ref(process.env.VITE_MAPBOX_CUSTOM_STYLE_URL)
+const mapboxAccessToken = ref(import.meta.env.VITE_MAPBOX_ACCESS_TOKEN)
+const mapboxCustomStyleUrl = ref(import.meta.env.VITE_MAPBOX_CUSTOM_STYLE_URL)
 const markerIcon = ref('marker.svg')
 const markerIconAlt = ref('marker-alt.svg')
 
