@@ -13,7 +13,7 @@ export default defineConfig({
     lib: {
       entry: path.resolve(__dirname, 'src/components/index.ts'),
       name: 'mapbox-embed',
-      fileName: format => `mapbox-embed.${format}.js`
+      fileName: format => (format === 'es' ? 'mapbox-embed.mjs' : 'mapbox-embed.cjs')
     },
     rollupOptions: {
       // make sure to externalize deps that shouldn't be bundled

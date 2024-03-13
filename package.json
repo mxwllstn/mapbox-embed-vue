@@ -8,13 +8,18 @@
     "dist"
   ],
   "type": "module",
-  "main": "./dist/mapbox-embed.umd.js",
-  "types": "./dist/components/index.d.ts",
-  "module": "./dist/mapbox-embed.es.js",
+  "main": "./dist/mapbox-embed.cjs",
+  "module": "./dist/mapbox-embed.mjs",
   "exports": {
     ".": {
-      "import": "./dist/mapbox-embed.es.js",
-      "require": "./dist/mapbox-embed.umd.js"
+      "import": {
+        "types": "./dist/components/index.d.ts",
+        "default": "./dist/mapbox-embed.mjs"
+      },
+      "require": {
+        "types": "./dist/components/index.d.ts",
+        "default": "./dist/mapbox-embed.cjs"
+      }
     }
   },
   "scripts": {
@@ -29,12 +34,12 @@
     "url": "https://github.com/mxwllstn/mapbox-embed-vue"
   },
   "dependencies": {
-    "@turf/turf": "^6.5.0",
-    "@types/mapbox-gl": "^3.1.0",
+    "@turf/turf": "^7.0.0-alpha.114",
     "mapbox-gl": "^3.2.0"
   },
   "devDependencies": {
     "@babel/types": "^7.24.0",
+    "@types/mapbox-gl": "^3.1.0",
     "@types/node": "^20.11.26",
     "@types/svgo": "^3.0.0",
     "@typescript-eslint/eslint-plugin": "^7.2.0",
@@ -54,9 +59,5 @@
     "vue": "^3.4.21",
     "vue-eslint-parser": "^9.4.2",
     "vue-tsc": "^2.0.6"
-  },
-  "resolutions": {
-    "word-wrap": "^1.2.4",
-    "semver": "^7.5.2"
   }
 }

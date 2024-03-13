@@ -87,8 +87,8 @@ const mapId = ref()
 
 const useContainer = computed(() => props.width || props.height)
 const coordsArray = computed(() => props.coordinates && mapId.value ? parseCoordinates(props.coordinates) : null)
-const center = computed(() => coordsArray.value ? turf.getCoords(turf.center(turf.points(coordsArray.value as turf.Position[]))) : null)
-const bounds = computed(() => turf.bbox(turf.lineString(coordsArray.value as turf.Position[])))
+const center = computed(() => coordsArray.value ? turf.getCoords(turf.center(turf.points(coordsArray.value as any[]))) : null)
+const bounds = computed(() => turf.bbox(turf.lineString(coordsArray.value as any[])))
 const startingZoom = computed(() => Number(props.zoom))
 const styleUrl = computed(() => {
   switch (props.mapStyle as Styles) {
