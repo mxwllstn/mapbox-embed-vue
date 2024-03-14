@@ -189,8 +189,7 @@ function initCoords() {
       : []
     emit('mapLoaded', [map.value, coordsArray.value, markers.value])
     setBoundsToCoords()
-  }
-  else if (map.value) {
+  } else if (map.value) {
     emit('mapLoaded', [map.value, null])
   }
 }
@@ -225,12 +224,10 @@ function setBoundsToCoords(options?: {
         right: props.padding + (padding?.right || 0),
       },
     })
-  }
-  else if (coordsArray.value) {
+  } else if (coordsArray.value) {
     map.value?.setZoom(15)
     map.value?.panTo(coordsArray.value[0])
-  }
-  else {
+  } else {
     map.value?.setZoom(15)
   }
 }

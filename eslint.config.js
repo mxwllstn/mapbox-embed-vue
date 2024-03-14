@@ -14,5 +14,7 @@ export default antfu({
     'vue/block-order': ['error', {
       order: [['script', 'template'], 'style'],
     }],
+    'curly': ['error', 'all'],
+    'style/brace-style': ['error', '1tbs', { allowSingleLine: false }],
   },
 })

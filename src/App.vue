@@ -102,10 +102,11 @@ function onMarkerClick([marker]: any): void {
 function toggleMarker(marker: any) {
   const el = marker.getElement().firstChild
   const { backgroundImage } = el.style
-  if (backgroundImage.includes(markerIcon.value))
+  if (backgroundImage.includes(markerIcon.value)) {
     setBackgroundImage(el, markerIconAlt.value)
-  else
+  } else {
     setBackgroundImage(el, markerIcon.value)
+  }
 }
 // function toggleMarkerByIx(ix: any) {
 //   const el = markers.value[ix].getElement()
