@@ -1,17 +1,7 @@
-<template>
-  <div class="container">
-    <MapboxEmbed :coordinates="coordinatesString" map-style="custom" :custom-style-url="mapboxCustomStyleUrl" zoom="3"
-      :access-token="mapboxAccessToken" :marker-icons="[markerIcon, markerIconAlt]" marker-anchor="center"
-      :marker-labels="markerLabels" @map-loaded="onMapLoad" @marker-clicked="onMarkerClick"
-      @coordinates-updated="onCoordinatesUpdated" @map-moved="onMapMoved" @map-zoomed="onMapZoomed"
-      @map-idled="onMapIdled" />
-  </div>
-</template>
-
 <script lang="ts" setup>
-import { ref, computed } from 'vue'
-import MapboxEmbed from './components/MapboxEmbed.vue'
+import { computed, ref } from 'vue'
 import * as turf from '@turf/turf'
+import MapboxEmbed from './components/MapboxEmbed.vue'
 
 const mapboxAccessToken = ref(import.meta.env.VITE_MAPBOX_ACCESS_TOKEN)
 const mapboxCustomStyleUrl = ref(import.meta.env.VITE_MAPBOX_CUSTOM_STYLE_URL)
@@ -54,10 +44,10 @@ function parseRoutes(coords: any[]) {
         type: 'Feature',
         geometry: {
           type: 'LineString',
-          coordinates: idx < coords.length - 1 ? [coords[idx], coords[idx + 1]] : [coords[idx], coords[0]]
-        }
+          coordinates: idx < coords.length - 1 ? [coords[idx], coords[idx + 1]] : [coords[idx], coords[0]],
+        },
       }
-    })
+    }),
   }
 }
 function addLines(map: any, coords: any) {
@@ -79,7 +69,7 @@ function addLines(map: any, coords: any) {
   map.on('load', () => {
     map.addSource('routes', {
       type: 'geojson',
-      data: routes as any
+      data: routes as any,
     })
 
     map.addLayer({
@@ -88,8 +78,8 @@ function addLines(map: any, coords: any) {
       type: 'line',
       paint: {
         'line-width': 2,
-        'line-color': '#fff'
-      }
+        'line-color': '#fff',
+      },
     })
   })
   map.resize()
@@ -100,11 +90,10 @@ function onMarkerClick([marker]: any): void {
 function toggleMarker(marker: any) {
   const el = marker.getElement().firstChild
   const { backgroundImage } = el.style
-  if (backgroundImage.includes(markerIcon.value)) {
+  if (backgroundImage.includes(markerIcon.value))
     setBackgroundImage(el, markerIconAlt.value)
-  } else {
+  else
     setBackgroundImage(el, markerIcon.value)
-  }
 }
 // function toggleMarkerByIx(ix: any) {
 //   const el = markers.value[ix].getElement()
@@ -118,8 +107,20 @@ function toggleMarker(marker: any) {
 function setBackgroundImage(el: { style: { backgroundImage: string } }, image: string) {
   el.style.backgroundImage = `url('/${image}')`
 }
-
 </script>
+
+<template>
+  <div class="container">
+    <MapboxEmbed
+      :coordinates="coordinatesString" map-style="custom" :custom-style-url="mapboxCustomStyleUrl" zoom="3"
+      :access-token="mapboxAccessToken" :marker-icons="[markerIcon, markerIconAlt]" marker-anchor="center"
+      :marker-labels="markerLabels" @map-loaded="onMapLoad" @marker-clicked="onMarkerClick"
+      @coordinates-updated="onCoordinatesUpdated" @map-moved="onMapMoved" @map-zoomed="onMapZoomed"
+      @map-idled="onMapIdled"
+    />
+  </div>
+</template>
+
 <style lang="scss">
 .container {
   width: 100vw;
@@ -132,9 +133,9 @@ function setBackgroundImage(el: { style: { backgroundImage: string } }, image: s
 
 .marker {
   &::after {
-    content: var(--markerLabel);
+    content: var(--marker-label);
     position: absolute;
-    top: 0px;
+    top: 0;
     left: 35px;
   }
 }

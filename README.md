@@ -5,7 +5,7 @@ Vue component that embeds a mapbox map with a marker
 
 #### Component
 ```vue
-<MapboxEmbed 
+<MapboxEmbed
   coordinates="34.077072, -118.269450"
   map-style="satellite-streets"
   zoom="15"

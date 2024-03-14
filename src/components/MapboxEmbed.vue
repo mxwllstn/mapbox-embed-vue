@@ -1,14 +1,8 @@
-<template>
-  <div v-if="useContainer" class="map-container" :style="{ width, height }">
-    <div v-if="mapId" :id="mapId" class="map"></div>
-  </div>
-  <div v-else-if="mapId" :id="mapId" class="map" />
-</template>
-
 <script lang="ts" setup>
 import mapboxgl from 'mapbox-gl'
 import * as turf from '@turf/turf'
-import { ref, computed, onMounted, onBeforeMount, watch, onUnmounted, nextTick } from 'vue'
+import { computed, nextTick, onBeforeMount, onMounted, onUnmounted, ref, watch } from 'vue'
+
 export type Styles =
   | 'streets'
   | 'outdoors'
@@ -27,56 +21,56 @@ interface MapBoxOptionsExtended extends mapboxgl.MapboxOptions {
 const props = defineProps({
   coordinates: {
     type: String,
-    default: null
+    default: null,
   },
   showMarkers: {
     type: Boolean,
-    default: true
+    default: true,
   },
   zoom: {
     type: String,
-    default: '1'
+    default: '1',
   },
   mapStyle: {
     type: String,
-    default: 'streets'
+    default: 'streets',
   },
   accessToken: {
     type: String,
-    default: null
+    default: null,
   },
   width: {
     type: String,
-    default: null
+    default: null,
   },
   height: {
     type: String,
-    default: null
+    default: null,
   },
   markerIcon: {
     type: String,
-    default: null
+    default: null,
   },
   markerIcons: {
     type: Array,
-    default: null
+    default: null,
   },
   markerAnchor: {
     type: String,
-    default: 'center'
+    default: 'center',
   },
   markerLabels: {
     type: Array,
-    default: null
+    default: null,
   },
   padding: {
     type: Number,
-    default: 80
+    default: 80,
   },
   customStyleUrl: {
     type: String,
-    default: null
-  }
+    default: null,
+  },
 })
 const emit = defineEmits(['mapLoaded', 'markerClicked', 'coordinatesUpdated', 'mapMoved', 'mapZoomed', 'mapIdled'])
 
@@ -135,14 +129,14 @@ onBeforeMount(() => {
 
 onMounted(async () => {
   console.log(props.coordinates)
-  mapId.value = `map${self.crypto.getRandomValues(new Uint32Array(10))[0]}`
+  mapId.value = `map${globalThis.crypto.getRandomValues(new Uint32Array(10))[0]}`
   await nextTick()
   map.value = new mapboxgl.Map({
     container: mapId.value, // container ID
     projection: 'mercator',
     style: styleUrl.value, // style URL
     center: center.value || [0, 0], // starting position [lng, lat]
-    zoom: startingZoom.value // starting zoom,
+    zoom: startingZoom.value, // starting zoom,
     // projection: 'naturalEarth' // starting projection
   } as MapBoxOptionsExtended)
   map.value.dragRotate.disable()
@@ -154,17 +148,16 @@ onUnmounted(() => {
   map.value?.remove()
 })
 
-
-const parseCoordinates = (coordString: string) => {
+function parseCoordinates(coordString: string) {
   return coordString.split('|').map(
     loc =>
       loc
         .split(',')
         .map(coords => Number(coords))
-        .reverse() as mapboxgl.LngLatLike
+        .reverse() as mapboxgl.LngLatLike,
   ) as mapboxgl.LngLatLike[]
 }
-const initCoords = () => {
+function initCoords() {
   if (map.value && coordsArray.value) {
     map.value.on('moveend', () => {
       emit('mapMoved')
@@ -175,23 +168,26 @@ const initCoords = () => {
     map.value.on('idle', () => {
       emit('mapIdled')
     })
-    markers.value = props.showMarkers ? coordsArray.value.map((coords, ix) => {
-      const marker = createMarker(coords, ix)
-      const el = marker.getElement()
-      el.onclick = () => {
-        markerZIndex.value++
-        el.style.zIndex = String(markerZIndex.value)
-        emit('markerClicked', [marker, ix])
-      }
-      return marker
-    }) : []
+    markers.value = props.showMarkers
+      ? coordsArray.value.map((coords, ix) => {
+        const marker = createMarker(coords, ix)
+        const el = marker.getElement()
+        el.onclick = () => {
+          markerZIndex.value++
+          el.style.zIndex = String(markerZIndex.value)
+          emit('markerClicked', [marker, ix])
+        }
+        return marker
+      })
+      : []
     emit('mapLoaded', [map.value, coordsArray.value, markers.value])
     setBoundsToCoords()
-  } else if (map.value) {
+  }
+  else if (map.value) {
     emit('mapLoaded', [map.value, null])
   }
 }
-const createMarker = (coords: any, ix: number) => {
+function createMarker(coords: any, ix: number) {
   const el = props.markerIcons || props.markerIcon ? document.createElement('div') : undefined
   const icon = props.markerIcons ? props.markerIcons[ix] : props.markerIcon
   if (el) {
@@ -200,17 +196,17 @@ const createMarker = (coords: any, ix: number) => {
     markerIcon.className = 'marker-icon' as any
     markerIcon.style.backgroundImage = `url("${icon}")` as any
     el.appendChild(markerIcon)
-    el.id = 'marker' + ix
-    props.markerLabels && el.style.setProperty('--markerLabel', `"${props.markerLabels[ix]}"`)
+    el.id = `marker${ix}`
+    props.markerLabels && el.style.setProperty('--marker-label', `"${props.markerLabels[ix]}"`)
   }
   return new mapboxgl.Marker({ element: el, anchor: props.markerAnchor as mapboxgl.Anchor, rotationAlignment: 'map' })
     .setLngLat(coords)
     .addTo(map.value as mapboxgl.Map)
 }
-const setBoundsToCoords = (options?: {
+function setBoundsToCoords(options?: {
   duration?: number
-  padding?: { top?: number; right?: number; bottom?: number; left?: number }
-}) => {
+  padding?: { top?: number, right?: number, bottom?: number, left?: number }
+}) {
   const { duration, padding } = options || {}
   if (coordsArray.value && coordsArray.value?.length > 1) {
     map.value?.fitBounds(bounds.value as mapboxgl.LngLatBoundsLike, {
@@ -219,35 +215,43 @@ const setBoundsToCoords = (options?: {
         top: props.padding + (padding?.top || 0),
         bottom: props.padding + (padding?.bottom || 0),
         left: props.padding + (padding?.left || 0),
-        right: props.padding + (padding?.right || 0)
-      }
+        right: props.padding + (padding?.right || 0),
+      },
     })
-  } else if (coordsArray.value) {
+  }
+  else if (coordsArray.value) {
     map.value?.setZoom(15)
     map.value?.panTo(coordsArray.value[0])
-  } else {
+  }
+  else {
     map.value?.setZoom(15)
   }
 }
-const updateCoords = () => {
+function updateCoords() {
   if (map.value && coordsArray.value) {
     console.log(coordsArray.value)
-    coordsArray.value.map((coords, ix) => {
+    coordsArray.value.forEach((coords, ix) => {
       /* update marker coords */
       markers.value?.[ix]?.setLngLat(coords)
     })
     emit('coordinatesUpdated', [map.value, coordsArray.value])
   }
 }
-
 </script>
+
+<template>
+  <div v-if="useContainer" class="map-container" :style="{ width, height }">
+    <div v-if="mapId" :id="mapId" class="map" />
+  </div>
+  <div v-else-if="mapId" :id="mapId" class="map" />
+</template>
 
 <style lang="scss">
 @import 'mapbox-gl/dist/mapbox-gl.css';
 
 body {
-  margin: 0px;
-  padding: 0px;
+  margin: 0;
+  padding: 0;
 }
 
 .map {
