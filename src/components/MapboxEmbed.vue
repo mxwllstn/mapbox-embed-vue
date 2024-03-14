@@ -237,6 +237,10 @@ function updateCoords() {
     emit('coordinatesUpdated', [map.value, coordsArray.value])
   }
 }
+
+defineExpose({
+  setBoundsToCoords,
+})
 </script>
 
 <template>
