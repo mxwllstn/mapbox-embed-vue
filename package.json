@@ -48,6 +48,7 @@
     "@typescript-eslint/parser": "^7.2.0",
     "@vitejs/plugin-vue": "^5.0.4",
     "eslint": "^8.57.0",
+    "postcss-html": "^1.6.0",
     "sass": "^1.71.1",
     "stylelint": "^16.2.1",
     "stylelint-config-recommended-vue": "^1.5.0",
