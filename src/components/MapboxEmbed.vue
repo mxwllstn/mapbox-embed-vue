@@ -1,3 +1,10 @@
+<template>
+  <div v-if="useContainer" class="map-container" :style="{ width, height }">
+    <div v-if="mapId" :id="mapId" class="map" />
+  </div>
+  <div v-else-if="mapId" :id="mapId" class="map" />
+</template>
+
 <script lang="ts" setup>
 import mapboxgl from 'mapbox-gl'
 import * as turf from '@turf/turf'
@@ -242,13 +249,6 @@ defineExpose({
   setBoundsToCoords,
 })
 </script>
-
-<template>
-  <div v-if="useContainer" class="map-container" :style="{ width, height }">
-    <div v-if="mapId" :id="mapId" class="map" />
-  </div>
-  <div v-else-if="mapId" :id="mapId" class="map" />
-</template>
 
 <style lang="scss">
 @import 'mapbox-gl/dist/mapbox-gl.css';

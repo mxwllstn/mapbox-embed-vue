@@ -11,5 +11,8 @@ export default antfu({
       varsIgnorePattern: '^_',
       argsIgnorePattern: '^_',
     }],
+    'vue/block-order': ['error', {
+      order: [['script', 'template'], 'style'],
+    }],
   },
 })

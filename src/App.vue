@@ -1,3 +1,15 @@
+<template>
+  <div class="container">
+    <MapboxEmbed
+      :coordinates="coordinatesString" map-style="custom" :custom-style-url="mapboxCustomStyleUrl" zoom="3"
+      :access-token="mapboxAccessToken" :marker-icons="[markerIcon, markerIconAlt]" marker-anchor="center"
+      :marker-labels="markerLabels" @map-loaded="onMapLoad" @marker-clicked="onMarkerClick"
+      @coordinates-updated="onCoordinatesUpdated" @map-moved="onMapMoved" @map-zoomed="onMapZoomed"
+      @map-idled="onMapIdled"
+    />
+  </div>
+</template>
+
 <script lang="ts" setup>
 import { computed, ref } from 'vue'
 import * as turf from '@turf/turf'
@@ -108,18 +120,6 @@ function setBackgroundImage(el: { style: { backgroundImage: string } }, image: s
   el.style.backgroundImage = `url('/${image}')`
 }
 </script>
-
-<template>
-  <div class="container">
-    <MapboxEmbed
-      :coordinates="coordinatesString" map-style="custom" :custom-style-url="mapboxCustomStyleUrl" zoom="3"
-      :access-token="mapboxAccessToken" :marker-icons="[markerIcon, markerIconAlt]" marker-anchor="center"
-      :marker-labels="markerLabels" @map-loaded="onMapLoad" @marker-clicked="onMarkerClick"
-      @coordinates-updated="onCoordinatesUpdated" @map-moved="onMapMoved" @map-zoomed="onMapZoomed"
-      @map-idled="onMapIdled"
-    />
-  </div>
-</template>
 
 <style lang="scss">
 .container {
