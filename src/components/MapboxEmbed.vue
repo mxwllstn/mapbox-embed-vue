@@ -89,7 +89,7 @@ const mapId = ref()
 const useContainer = computed(() => props.width || props.height)
 const coordsArray = computed(() => props.coordinates && mapId.value ? parseCoordinates(props.coordinates) : null)
 const center = computed(() => coordsArray.value ? turf.getCoords(turf.center(turf.points(coordsArray.value as any[]))) : null)
-const bounds = computed(() => turf.bbox(turf.lineString(coordsArray.value as any[])))
+const mapBounds = computed(() => turf.bbox(turf.lineString(coordsArray.value as any[])))
 const startingZoom = computed(() => Number(props.zoom))
 const styleUrl = computed(() => {
   switch (props.mapStyle as Styles) {
@@ -156,7 +156,7 @@ onUnmounted(() => {
 })
 
 function parseCoordinates(coordString: string) {
-  return coordString.split('|').map(
+  return coordString?.split('|').map(
     loc =>
       loc
         .split(',')
@@ -211,13 +211,15 @@ function createMarker(coords: any, ix: number) {
 }
 function setBoundsToCoords(options?: {
   coordinates?: []
+  bounds?: []
   duration?: number
   padding?: { top?: number, right?: number, bottom?: number, left?: number }
 }) {
   const { duration, padding } = options || {}
   const coordinates = options?.coordinates || coordsArray.value
+  const bounds = options?.bounds || mapBounds.value
   if (coordinates && coordinates?.length > 1) {
-    map.value?.fitBounds(bounds.value as mapboxgl.LngLatBoundsLike, {
+    map.value?.fitBounds(bounds as mapboxgl.LngLatBoundsLike, {
       duration: duration || 0,
       padding: {
         top: props.padding + (padding?.top || 0),
