@@ -210,11 +210,13 @@ function createMarker(coords: any, ix: number) {
     .addTo(map.value as mapboxgl.Map)
 }
 function setBoundsToCoords(options?: {
+  coordinates?: []
   duration?: number
   padding?: { top?: number, right?: number, bottom?: number, left?: number }
 }) {
   const { duration, padding } = options || {}
-  if (coordsArray.value && coordsArray.value?.length > 1) {
+  const coordinates = options?.coordinates || coordsArray.value
+  if (coordinates && coordinates?.length > 1) {
     map.value?.fitBounds(bounds.value as mapboxgl.LngLatBoundsLike, {
       duration: duration || 0,
       padding: {
@@ -224,9 +226,9 @@ function setBoundsToCoords(options?: {
         right: props.padding + (padding?.right || 0),
       },
     })
-  } else if (coordsArray.value) {
+  } else if (coordinates) {
     map.value?.setZoom(15)
-    map.value?.panTo(coordsArray.value[0])
+    map.value?.panTo(coordinates[0])
   } else {
     map.value?.setZoom(15)
   }
@@ -244,6 +246,7 @@ function updateCoords() {
 
 defineExpose({
   setBoundsToCoords,
+  parseCoordinates,
 })
 </script>
 
