@@ -211,13 +211,12 @@ function createMarker(coords: any, ix: number) {
 }
 function setBoundsToCoords(options?: {
   coordinates?: []
-  bounds?: []
   duration?: number
   padding?: { top?: number, right?: number, bottom?: number, left?: number }
 }) {
   const { duration, padding } = options || {}
   const coordinates = options?.coordinates || coordsArray.value
-  const bounds = options?.bounds || mapBounds.value
+  const bounds = options?.coordinates ? turf.bbox(turf.lineString(options?.coordinates as any[])) : mapBounds.value
   if (coordinates && coordinates?.length > 1) {
     map.value?.fitBounds(bounds as mapboxgl.LngLatBoundsLike, {
       duration: duration || 0,
