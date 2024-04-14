@@ -147,7 +147,7 @@ watch(
   () => props.showDraggableMarker,
   () => {
     props.showDraggableMarker ? createDraggableMarker(props.draggableMarkerCoordinates || map.value.getCenter()) : removeDraggableMarker()
-    props.showDraggableMarker && props.draggableMarkerCoordinates && map.value.setCenter(props.draggableMarkerCoordinates)
+    props.showDraggableMarker && props.draggableMarkerCoordinates && map.value.flyTo({ center: props.draggableMarkerCoordinates, essential: true })
   },
 )
 
