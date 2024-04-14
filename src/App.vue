@@ -3,7 +3,7 @@
     <MapboxEmbed
       :coordinates="coordinatesString" map-style="custom" :custom-style-url="mapboxCustomStyleUrl" zoom="3"
       :access-token="mapboxAccessToken" :marker-icons="[markerIcon, markerIconAlt]" marker-anchor="center"
-      :marker-labels="markerLabels" :show-draggable-marker="showDraggableMarker" :draggable-marker-icon="markerIconDraggable" @map-loaded="onMapLoad" @marker-clicked="onMarkerClick"
+      :marker-labels="markerLabels" :show-draggable-marker="showDraggableMarker" :draggable-marker-icon="markerIconDraggable" :draggable-marker-coordinates="draggableMarkerCoordinates" @map-loaded="onMapLoad" @marker-clicked="onMarkerClick"
       @coordinates-updated="onCoordinatesUpdated" @map-moved="onMapMoved" @map-zoomed="onMapZoomed" @map-clicked="showDraggableMarker = true"
       @map-idled="onMapIdled" @draggable-marker-moved="handleDraggableMarkerMoved"
     />
@@ -28,6 +28,7 @@ const coordinates = computed(() => locations.value ? locations.value.map((locati
 const coordinatesString = computed(() => coordinates.value?.join('|'))
 
 const showDraggableMarker = ref(false)
+const draggableMarkerCoordinates = ref()
 
 function onMapLoad([map, coords, markers]: any) {
   addLines(map, coords)

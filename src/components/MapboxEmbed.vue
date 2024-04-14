@@ -86,6 +86,10 @@ const props = defineProps({
     type: String,
     default: null,
   },
+  draggableMarkerCoordinates: {
+    type: Object,
+    default: null,
+  },
 })
 const emit = defineEmits(['mapLoaded', 'markerClicked', 'coordinatesUpdated', 'mapMoved', 'mapZoomed', 'mapIdled', 'mapClicked', 'draggableMarkerClicked', 'draggableMarkerMoved'])
 
@@ -142,7 +146,7 @@ watch(coordsArray, async (newCoords, oldCoords) => {
 watch(
   () => props.showDraggableMarker,
   () => {
-    props.showDraggableMarker ? createDraggableMarker(map.value.getCenter()) : removeDraggableMarker()
+    props.showDraggableMarker ? createDraggableMarker(props.draggableMarkerCoordinates || map.value.getCenter()) : removeDraggableMarker()
   },
 )
 
@@ -226,7 +230,7 @@ function initCoords() {
       })
       : []
     emit('mapLoaded', [map.value, coordsArray.value, markers.value])
-    props.showDraggableMarker && createDraggableMarker(map.value.getCenter())
+    props.showDraggableMarker && createDraggableMarker(props.draggableMarkerCoordinates || map.value.getCenter())
     setBoundsToCoords()
   } else if (map.value) {
     emit('mapLoaded', [map.value, null])
@@ -270,7 +274,7 @@ function createDraggableMarker(coords: any) {
     .setLngLat(coords)
     .addTo(map.value as mapboxgl.Map)
 
-  const label = [map.value.getCenter().lat, map.value.getCenter().lng]
+  const label = props.draggableMarkerCoordinates ? [props.draggableMarkerCoordinates.lat, props.draggableMarkerCoordinates.lng] : [map.value.getCenter().lat, map.value.getCenter().lng]
 
   setDraggableMarkerStyle(label.join())
 
