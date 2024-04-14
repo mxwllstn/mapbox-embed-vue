@@ -3,9 +3,9 @@
     <MapboxEmbed
       :coordinates="coordinatesString" map-style="custom" :custom-style-url="mapboxCustomStyleUrl" zoom="3"
       :access-token="mapboxAccessToken" :marker-icons="[markerIcon, markerIconAlt]" marker-anchor="center"
-      :marker-labels="markerLabels" @map-loaded="onMapLoad" @marker-clicked="onMarkerClick"
-      @coordinates-updated="onCoordinatesUpdated" @map-moved="onMapMoved" @map-zoomed="onMapZoomed"
-      @map-idled="onMapIdled"
+      :marker-labels="markerLabels" :show-draggable-marker="showDraggableMarker" :draggable-marker-icon="markerIconDraggable" @map-loaded="onMapLoad" @marker-clicked="onMarkerClick"
+      @coordinates-updated="onCoordinatesUpdated" @map-moved="onMapMoved" @map-zoomed="onMapZoomed" @map-clicked="showDraggableMarker = true"
+      @map-idled="onMapIdled" @draggable-marker-moved="handleDraggableMarkerMoved"
     />
   </div>
 </template>
@@ -19,12 +19,15 @@ const mapboxAccessToken = ref(import.meta.env.VITE_MAPBOX_ACCESS_TOKEN)
 const mapboxCustomStyleUrl = ref(import.meta.env.VITE_MAPBOX_CUSTOM_STYLE_URL)
 const markerIcon = ref('marker.svg')
 const markerIconAlt = ref('marker-alt.svg')
+const markerIconDraggable = ref('marker-draggable.svg')
 
 const defaultCoords = computed(() => ['34.072799, -118.262034', '34.077072, -118.269450'])
 const locations = computed(() => defaultCoords.value)
 const markerLabels = computed(() => locations.value.map((_val, idx) => (idx + 1).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false })))
 const coordinates = computed(() => locations.value ? locations.value.map((location: any) => location) : null)
 const coordinatesString = computed(() => coordinates.value?.join('|'))
+
+const showDraggableMarker = ref(false)
 
 function onMapLoad([map, coords, markers]: any) {
   addLines(map, coords)
@@ -40,6 +43,9 @@ function onMapZoomed() {
 
 function onMapIdled() {
   console.log('map idled')
+}
+function handleDraggableMarkerMoved(coordinates: any) {
+  console.log({ draggableCoords: coordinates })
 }
 function onCoordinatesUpdated([map, coords]: any) {
   updateLines(map, coords)

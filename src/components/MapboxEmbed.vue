@@ -78,13 +78,22 @@ const props = defineProps({
     type: String,
     default: null,
   },
+  showDraggableMarker: {
+    type: Boolean,
+    default: false,
+  },
+  draggableMarkerIcon: {
+    type: String,
+    default: null,
+  },
 })
-const emit = defineEmits(['mapLoaded', 'markerClicked', 'coordinatesUpdated', 'mapMoved', 'mapZoomed', 'mapIdled'])
+const emit = defineEmits(['mapLoaded', 'markerClicked', 'coordinatesUpdated', 'mapMoved', 'mapZoomed', 'mapIdled', 'mapClicked', 'draggableMarkerClicked', 'draggableMarkerMoved'])
 
 const map = ref()
 const markers = ref()
 const markerZIndex = ref(1)
 const mapId = ref()
+const draggableMarker = ref()
 
 const useContainer = computed(() => props.width || props.height)
 const coordsArray = computed(() => props.coordinates && mapId.value ? parseCoordinates(props.coordinates) : null)
@@ -130,6 +139,13 @@ watch(coordsArray, async (newCoords, oldCoords) => {
   }
 })
 
+watch(
+  () => props.showDraggableMarker,
+  () => {
+    props.showDraggableMarker ? createDraggableMarker(map.value.getCenter()) : removeDraggableMarker()
+  },
+)
+
 onBeforeMount(() => {
   mapboxgl.accessToken = props.accessToken
 })
@@ -164,6 +180,15 @@ function parseCoordinates(coordString: string) {
         .reverse() as mapboxgl.LngLatLike,
   ) as mapboxgl.LngLatLike[]
 }
+
+const doubleClicking = ref(false)
+const markerClicking = ref(false)
+
+function toggleMarkerClicking() {
+  markerClicking.value = true
+  setTimeout(() => markerClicking.value = false, 10)
+}
+
 function initCoords() {
   if (map.value && coordsArray.value) {
     map.value.on('moveend', () => {
@@ -175,6 +200,18 @@ function initCoords() {
     map.value.on('idle', () => {
       emit('mapIdled')
     })
+    map.value.on('dblclick', () => {
+      doubleClicking.value = true
+      setTimeout(() => doubleClicking.value = false, 10)
+    })
+
+    map.value.on('click', (e: any) => {
+      if (!markerClicking.value) {
+        const { lat, lng } = e.lngLat || {}
+        props.showDraggableMarker && setDraggableMarkerCoordinates([lng, lat])
+        emit('mapClicked')
+      }
+    })
     markers.value = props.showMarkers
       ? coordsArray.value.map((coords, ix) => {
         const marker = createMarker(coords, ix)
@@ -183,11 +220,13 @@ function initCoords() {
           markerZIndex.value++
           el.style.zIndex = String(markerZIndex.value)
           emit('markerClicked', [marker, ix])
+          toggleMarkerClicking()
         }
         return marker
       })
       : []
     emit('mapLoaded', [map.value, coordsArray.value, markers.value])
+    props.showDraggableMarker && createDraggableMarker(map.value.getCenter())
     setBoundsToCoords()
   } else if (map.value) {
     emit('mapLoaded', [map.value, null])
@@ -208,6 +247,60 @@ function createMarker(coords: any, ix: number) {
   return new mapboxgl.Marker({ element: el, anchor: props.markerAnchor as mapboxgl.Anchor, rotationAlignment: 'map' })
     .setLngLat(coords)
     .addTo(map.value as mapboxgl.Map)
+}
+function createDraggableMarker(coords: any) {
+  const el = document.createElement('div')
+  const icon = props.draggableMarkerIcon || props.markerIcon
+  if (el) {
+    el.classList.add('marker', 'draggable')
+    const markerIcon = document.createElement('div')
+    markerIcon.className = 'marker-icon' as any
+    markerIcon.style.backgroundImage = `url("${icon}")` as any
+    el.appendChild(markerIcon)
+    el.id = `draggableMarker`
+    el.style.zIndex = '99999'
+    el.classList.add('toggle-show')
+    setTimeout(() => el.classList.remove('toggle-show'), 1000)
+    el.onclick = () => {
+      emit('draggableMarkerClicked')
+      toggleMarkerClicking()
+    }
+  }
+  draggableMarker.value = new mapboxgl.Marker({ element: el, anchor: props.markerAnchor as mapboxgl.Anchor, rotationAlignment: 'map', draggable: true })
+    .setLngLat(coords)
+    .addTo(map.value as mapboxgl.Map)
+
+  const label = [map.value.getCenter().lat, map.value.getCenter().lng]
+
+  setDraggableMarkerStyle(label.join())
+
+  draggableMarker.value.on('dragstart', () => {
+    const el = draggableMarker.value.getElement()
+    el.classList.add('dragging')
+    el.classList.remove('dragged')
+  })
+
+  draggableMarker.value.on('dragend', (e: any) => {
+    const lngLat = e.target.getLngLat()
+    setDraggableMarkerStyle([lngLat.lat, lngLat.lng].join())
+    emit('draggableMarkerMoved', { ...lngLat })
+  })
+}
+function setDraggableMarkerStyle(label?: string) {
+  const el = draggableMarker.value.getElement()
+  el.style.setProperty('--marker-label', `"${label}"`)
+  el.classList.add('dragged')
+  el.classList.remove('dragging')
+  setTimeout(() => el.classList.remove('dragged'), 400)
+}
+
+function setDraggableMarkerCoordinates(coordinates: any[]) {
+  draggableMarker.value.setLngLat(coordinates)
+  setDraggableMarkerStyle(coordinates.join())
+}
+function removeDraggableMarker() {
+  draggableMarker.value.remove()
+  draggableMarker.value = null
 }
 function setBoundsToCoords(options?: {
   coordinates?: []
@@ -268,6 +361,19 @@ body {
   width: 40px;
   height: 40px;
   cursor: pointer;
+  transition: top 300ms;
+
+  &.dragged:not(.toggle-show) {
+    animation-name: dragged;
+    animation-duration: 300ms;
+    position: relative;
+  }
+
+  &.toggle-show {
+    animation-name: toggle-show;
+    animation-duration: 1000ms;
+    position: relative;
+  }
 
   .marker-icon {
     width: 100%;
@@ -276,5 +382,19 @@ body {
     background-position: center;
     background-size: cover;
   }
+}
+
+@keyframes dragged {
+  0%   { top: 0; }
+  50% { top: 0.125rem; }
+  100% { top: 0; }
+}
+
+@keyframes toggle-show {
+  0%   { top: -1000px; }
+  40% { top: 0; }
+  60% { top: 0; }
+  75% { top: 0.125rem; }
+  100% { top: 0; }
 }
 </style>
