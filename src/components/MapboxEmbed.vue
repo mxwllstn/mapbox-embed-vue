@@ -297,6 +297,7 @@ function setDraggableMarkerStyle(label?: string) {
 function setDraggableMarkerCoordinates(coordinates: any[]) {
   draggableMarker.value.setLngLat(coordinates)
   setDraggableMarkerStyle(coordinates.join())
+  emit('draggableMarkerMoved', { ...coordinates })
 }
 function removeDraggableMarker() {
   draggableMarker.value.remove()
