@@ -5,13 +5,13 @@
       :access-token="mapboxAccessToken" :marker-icons="[markerIcon, markerIconAlt]" marker-anchor="center"
       :marker-labels="markerLabels" :show-draggable-marker="showDraggableMarker" :draggable-marker-icon="markerIconDraggable" :draggable-marker-coordinates="draggableMarkerCoordinates" @map-loaded="onMapLoad" @marker-clicked="onMarkerClick"
       @coordinates-updated="onCoordinatesUpdated" @map-moved="onMapMoved" @map-zoomed="onMapZoomed" @map-clicked="showDraggableMarker = true"
-      @map-idled="onMapIdled" @draggable-marker-moved="handleDraggableMarkerMoved"
+      @map-idled="onMapIdled" @draggable-marker-moved="handleDraggableMarkerMoved" @draggable-marker-clicked="showDraggableMarker = false"
     />
   </div>
 </template>
 
 <script lang="ts" setup>
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import * as turf from '@turf/turf'
 import MapboxEmbed from './components/MapboxEmbed.vue'
 
@@ -30,8 +30,11 @@ const coordinatesString = computed(() => coordinates.value?.join('|'))
 const showDraggableMarker = ref(false)
 const draggableMarkerCoordinates = ref()
 
-function onMapLoad([map, coords, markers]: any) {
-  addLines(map, coords)
+const map = ref()
+
+function onMapLoad([mapEmbed, coords, markers]: any) {
+  addLines(mapEmbed, coords)
+  map.value = mapEmbed
   markers.value = markers
 }
 function onMapMoved() {
@@ -46,8 +49,15 @@ function onMapIdled() {
   console.log('map idled')
 }
 function handleDraggableMarkerMoved(coordinates: any) {
-  console.log({ draggableCoords: coordinates })
+  draggableMarkerCoordinates.value = coordinates
 }
+
+watch(
+  () => showDraggableMarker.value,
+  async () => {
+    showDraggableMarker.value && draggableMarkerCoordinates.value && map.value.flyTo({ center: draggableMarkerCoordinates.value })
+  },
+)
 function onCoordinatesUpdated([map, coords]: any) {
   updateLines(map, coords)
 }

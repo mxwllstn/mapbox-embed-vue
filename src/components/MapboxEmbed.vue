@@ -187,6 +187,7 @@ function parseCoordinates(coordString: string) {
 
 const doubleClicking = ref(false)
 const markerClicking = ref(false)
+const markerAnimating = ref(false)
 
 function toggleMarkerClicking() {
   markerClicking.value = true
@@ -210,7 +211,7 @@ function initCoords() {
     })
 
     map.value.on('click', (e: any) => {
-      if (!markerClicking.value) {
+      if (!markerClicking.value && !markerAnimating.value) {
         const { lat, lng } = e.lngLat || {}
         props.showDraggableMarker && setDraggableMarkerCoordinates([lng, lat])
         emit('mapClicked')
@@ -264,7 +265,11 @@ function createDraggableMarker(coords: any) {
     el.id = `draggableMarker`
     el.style.zIndex = '99999'
     el.classList.add('toggle-show')
-    setTimeout(() => el.classList.remove('toggle-show'), 1000)
+    markerAnimating.value = true
+    setTimeout(() => {
+      el.classList.remove('toggle-show')
+      markerAnimating.value = false
+    }, 900)
     el.onclick = () => {
       emit('draggableMarkerClicked')
       toggleMarkerClicking()
@@ -304,8 +309,15 @@ function setDraggableMarkerCoordinates(coordinates: any[]) {
   emit('draggableMarkerMoved', { lng: coordinates[0], lat: coordinates[1] })
 }
 function removeDraggableMarker() {
-  draggableMarker.value.remove()
-  draggableMarker.value = null
+  const el = draggableMarker.value.getElement()
+  el.classList.add('toggle-hide')
+  markerAnimating.value = true
+  setTimeout(() => {
+    draggableMarker.value.remove()
+    draggableMarker.value = null
+    el.classList.remove('toggle-hide')
+    markerAnimating.value = false
+  }, 900)
 }
 function setBoundsToCoords(options?: {
   coordinates?: []
@@ -380,6 +392,12 @@ body {
     position: relative;
   }
 
+  &.toggle-hide {
+    animation-name: toggle-hide;
+    animation-duration: 1000ms;
+    position: relative;
+  }
+
   .marker-icon {
     width: 100%;
     height: 100%;
@@ -397,9 +415,13 @@ body {
 
 @keyframes toggle-show {
   0%   { top: -1000px; }
-  40% { top: 0; }
-  60% { top: 0; }
   75% { top: 0.125rem; }
   100% { top: 0; }
+}
+
+@keyframes toggle-hide {
+  0%   { top: 0; }
+  25% { top: 0.125rem; }
+  100% { top: -1000px; }
 }
 </style>
