@@ -255,6 +255,8 @@ function createMarker(coords: any, ix: number) {
     .setLngLat(coords)
     .addTo(map.value as mapboxgl.Map)
 }
+const dragTimeoutId = ref()
+
 function createDraggableMarker(coords: any) {
   const el = document.createElement('div')
   const icon = props.draggableMarkerIcon || props.markerIcon
@@ -268,7 +270,8 @@ function createDraggableMarker(coords: any) {
     el.style.zIndex = '99999'
     el.classList.add('toggle-show')
     markerAnimating.value = true
-    setTimeout(() => {
+    clearTimeout(dragTimeoutId.value)
+    dragTimeoutId.value = setTimeout(() => {
       el.classList.remove('toggle-show')
       markerAnimating.value = false
     }, 900)
@@ -320,7 +323,8 @@ function removeDraggableMarker() {
     el.classList.add('toggle-hide')
     markerAnimating.value = true
   }
-  setTimeout(() => {
+  clearTimeout(dragTimeoutId.value)
+  dragTimeoutId.value = setTimeout(() => {
     draggableMarker.value?.remove()
     draggableMarker.value = null
     el.classList.remove('toggle-hide')
