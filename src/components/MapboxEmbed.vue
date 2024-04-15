@@ -321,7 +321,7 @@ function removeDraggableMarker() {
     markerAnimating.value = true
   }
   setTimeout(() => {
-    draggableMarker.value.remove()
+    draggableMarker.value?.remove()
     draggableMarker.value = null
     el.classList.remove('toggle-hide')
     markerAnimating.value = false
