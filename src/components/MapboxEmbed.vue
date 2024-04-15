@@ -146,7 +146,7 @@ watch(coordsArray, async (newCoords, oldCoords) => {
 watch(
   () => props.showDraggableMarker,
   () => {
-    props.showDraggableMarker ? !draggableMarker.value && createDraggableMarker(props.draggableMarkerCoordinates || map.value.getCenter()) : removeDraggableMarker()
+    props.showDraggableMarker ? !draggableMarker.value && createDraggableMarker(props.draggableMarkerCoordinates || map.value.getCenter()) : draggableMarker.value && removeDraggableMarker()
   },
 )
 
