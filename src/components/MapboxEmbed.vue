@@ -270,11 +270,16 @@ function createDraggableMarker(coords: any) {
     el.id = `draggableMarker`
     el.style.zIndex = '99999'
     el.classList.add('toggle-show')
-    markerAnimating.value = true
-    dragTimeoutId.value = setTimeout(() => {
+    if (markerAnimating.value) {
       el.classList.remove('toggle-show')
-      markerAnimating.value = false
-    }, 900)
+    } else {
+      markerAnimating.value = true
+      dragTimeoutId.value = setTimeout(() => {
+        el.classList.remove('toggle-show')
+        markerAnimating.value = false
+      }, 900)
+    }
+
     el.onclick = () => {
       emit('draggableMarkerClicked')
       toggleMarkerClicking()
@@ -322,14 +327,22 @@ function removeDraggableMarker() {
   clearTimeout(dragTimeoutId.value)
   if (el) {
     el.classList.add('toggle-hide')
-    markerAnimating.value = true
+    if (markerAnimating.value) {
+      el.classList.remove('toggle-show')
+      draggableMarker.value?.remove()
+      draggableMarker.value = null
+      el.classList.remove('toggle-hide')
+    } else {
+      markerAnimating.value = true
+
+      dragTimeoutId.value = setTimeout(() => {
+        draggableMarker.value?.remove()
+        draggableMarker.value = null
+        el.classList.remove('toggle-hide')
+        markerAnimating.value = false
+      }, 900)
+    }
   }
-  dragTimeoutId.value = setTimeout(() => {
-    draggableMarker.value?.remove()
-    draggableMarker.value = null
-    el.classList.remove('toggle-hide')
-    markerAnimating.value = false
-  }, 900)
 }
 function setBoundsToCoords(options?: {
   coordinates?: []
