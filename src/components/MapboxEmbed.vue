@@ -261,6 +261,7 @@ const dragRemoveTimeoutId = ref()
 function createDraggableMarker(coords: any) {
   const el = document.createElement('div')
   const icon = props.draggableMarkerIcon || props.markerIcon
+  console.log({ dragRemoveTimeoutId: dragRemoveTimeoutId.value, dragCreateTimeoutId: dragCreateTimeoutId.value })
   clearTimeout(dragRemoveTimeoutId.value)
   if (el) {
     el.classList.add('marker', 'draggable')
@@ -329,6 +330,7 @@ function removeDraggableMarker() {
   clearTimeout(dragCreateTimeoutId.value)
   if (el) {
     el.classList.add('toggle-hide')
+    console.log({ dragRemoveTimeoutId: dragRemoveTimeoutId.value, dragCreateTimeoutId: dragCreateTimeoutId.value })
     if (markerAnimating.value) {
       el.classList.remove('toggle-show')
       draggableMarker.value?.remove()
