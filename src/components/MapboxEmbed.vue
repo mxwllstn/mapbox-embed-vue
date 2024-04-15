@@ -220,12 +220,14 @@ function initCoords() {
     markers.value = props.showMarkers
       ? coordsArray.value.map((coords, ix) => {
         const marker = createMarker(coords, ix)
-        const el = marker.getElement()
-        el.onclick = () => {
-          markerZIndex.value++
-          el.style.zIndex = String(markerZIndex.value)
-          emit('markerClicked', [marker, ix])
-          toggleMarkerClicking()
+        const el = marker?.getElement()
+        if (el) {
+          el.onclick = () => {
+            markerZIndex.value++
+            el.style.zIndex = String(markerZIndex.value)
+            emit('markerClicked', [marker, ix])
+            toggleMarkerClicking()
+          }
         }
         return marker
       })
@@ -284,9 +286,11 @@ function createDraggableMarker(coords: any) {
   setDraggableMarkerStyle(label.join())
 
   draggableMarker.value.on('dragstart', () => {
-    const el = draggableMarker.value.getElement()
-    el.classList.add('dragging')
-    el.classList.remove('dragged')
+    const el = draggableMarker.value?.getElement()
+    if (el) {
+      el.classList.add('dragging')
+      el.classList.remove('dragged')
+    }
   })
 
   draggableMarker.value.on('dragend', (e: any) => {
@@ -296,11 +300,13 @@ function createDraggableMarker(coords: any) {
   })
 }
 function setDraggableMarkerStyle(label?: string) {
-  const el = draggableMarker.value.getElement()
-  el.style.setProperty('--marker-label', `"${label}"`)
-  el.classList.add('dragged')
-  el.classList.remove('dragging')
-  setTimeout(() => el.classList.remove('dragged'), 400)
+  const el = draggableMarker.value?.getElement()
+  if (el) {
+    el.style.setProperty('--marker-label', `"${label}"`)
+    el.classList.add('dragged')
+    el.classList.remove('dragging')
+    setTimeout(() => el.classList.remove('dragged'), 400)
+  }
 }
 
 function setDraggableMarkerCoordinates(coordinates: any[]) {
@@ -309,9 +315,11 @@ function setDraggableMarkerCoordinates(coordinates: any[]) {
   emit('draggableMarkerMoved', { lng: coordinates[0], lat: coordinates[1] })
 }
 function removeDraggableMarker() {
-  const el = draggableMarker.value.getElement()
-  el.classList.add('toggle-hide')
-  markerAnimating.value = true
+  const el = draggableMarker.value?.getElement()
+  if (el) {
+    el.classList.add('toggle-hide')
+    markerAnimating.value = true
+  }
   setTimeout(() => {
     draggableMarker.value.remove()
     draggableMarker.value = null
