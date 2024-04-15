@@ -272,6 +272,7 @@ function createDraggableMarker(coords: any) {
     el.classList.add('toggle-show')
     if (markerAnimating.value) {
       el.classList.remove('toggle-show')
+      markerAnimating.value = false
     } else {
       markerAnimating.value = true
       dragTimeoutId.value = setTimeout(() => {
@@ -332,6 +333,7 @@ function removeDraggableMarker() {
       draggableMarker.value?.remove()
       draggableMarker.value = null
       el.classList.remove('toggle-hide')
+      markerAnimating.value = false
     } else {
       markerAnimating.value = true
 
