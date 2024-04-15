@@ -260,6 +260,14 @@ function createMarker(coords: any, ix: number) {
 function createDraggableMarker(coords: any) {
   const el = document.createElement('div')
   const icon = props.draggableMarkerIcon || props.markerIcon
+  if (removeDraggableTimeoutId.value) {
+    clearTimeout(removeDraggableTimeoutId.value)
+    removeDraggableTimeoutId.value = null
+    draggableMarker.value?.remove()
+    draggableMarker.value = null
+    el.classList.remove('toggle-hide')
+    markerAnimating.value = false
+  }
   if (el) {
     el.classList.add('marker', 'draggable')
     const markerIcon = document.createElement('div')
@@ -270,14 +278,6 @@ function createDraggableMarker(coords: any) {
     el.style.zIndex = '99999'
     el.classList.add('toggle-show')
     markerAnimating.value = true
-    if (removeDraggableTimeoutId.value) {
-      clearTimeout(removeDraggableTimeoutId.value)
-      removeDraggableTimeoutId.value = null
-      draggableMarker.value?.remove()
-      draggableMarker.value = null
-      el.classList.remove('toggle-hide')
-      markerAnimating.value = false
-    }
     createDraggableTimeoutId.value = setTimeout(() => {
       el.classList.remove('toggle-show')
       markerAnimating.value = false
@@ -325,15 +325,15 @@ function setDraggableMarkerCoordinates(coordinates: any[]) {
 }
 function removeDraggableMarker() {
   const el = draggableMarker.value?.getElement()
+  if (createDraggableTimeoutId.value) {
+    clearTimeout(createDraggableTimeoutId.value)
+    createDraggableTimeoutId.value = null
+    el.classList.remove('toggle-show')
+    markerAnimating.value = false
+  }
   if (el) {
     el.classList.add('toggle-hide')
     markerAnimating.value = true
-    if (createDraggableTimeoutId.value) {
-      clearTimeout(createDraggableTimeoutId.value)
-      createDraggableTimeoutId.value = null
-      el.classList.remove('toggle-show')
-      markerAnimating.value = false
-    }
     removeDraggableTimeoutId.value = setTimeout(() => {
       draggableMarker.value?.remove()
       draggableMarker.value = null
