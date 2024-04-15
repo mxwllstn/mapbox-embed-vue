@@ -98,6 +98,8 @@ const markers = ref()
 const markerZIndex = ref(1)
 const mapId = ref()
 const draggableMarker = ref()
+const createDraggableTimeoutId = ref()
+const removeDraggableTimeoutId = ref()
 
 const useContainer = computed(() => props.width || props.height)
 const coordsArray = computed(() => props.coordinates && mapId.value ? parseCoordinates(props.coordinates) : null)
@@ -268,7 +270,15 @@ function createDraggableMarker(coords: any) {
     el.style.zIndex = '99999'
     el.classList.add('toggle-show')
     markerAnimating.value = true
-    setTimeout(() => {
+    if (removeDraggableTimeoutId.value) {
+      clearTimeout(removeDraggableTimeoutId.value)
+      removeDraggableTimeoutId.value = null
+      draggableMarker.value?.remove()
+      draggableMarker.value = null
+      el.classList.remove('toggle-hide')
+      markerAnimating.value = false
+    }
+    createDraggableTimeoutId.value = setTimeout(() => {
       el.classList.remove('toggle-show')
       markerAnimating.value = false
     }, 900)
@@ -308,7 +318,6 @@ function setDraggableMarkerStyle(label?: string) {
     setTimeout(() => el.classList.remove('dragged'), 400)
   }
 }
-
 function setDraggableMarkerCoordinates(coordinates: any[]) {
   draggableMarker.value.setLngLat(coordinates)
   setDraggableMarkerStyle(coordinates.join())
@@ -319,13 +328,19 @@ function removeDraggableMarker() {
   if (el) {
     el.classList.add('toggle-hide')
     markerAnimating.value = true
+    if (createDraggableTimeoutId.value) {
+      clearTimeout(createDraggableTimeoutId.value)
+      createDraggableTimeoutId.value = null
+      el.classList.remove('toggle-show')
+      markerAnimating.value = false
+    }
+    removeDraggableTimeoutId.value = setTimeout(() => {
+      draggableMarker.value?.remove()
+      draggableMarker.value = null
+      el.classList.remove('toggle-hide')
+      markerAnimating.value = false
+    }, 900)
   }
-  setTimeout(() => {
-    draggableMarker.value?.remove()
-    draggableMarker.value = null
-    el.classList.remove('toggle-hide')
-    markerAnimating.value = false
-  }, 900)
 }
 function setBoundsToCoords(options?: {
   coordinates?: []
