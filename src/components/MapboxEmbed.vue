@@ -260,6 +260,7 @@ const dragTimeoutId = ref()
 function createDraggableMarker(coords: any) {
   const el = document.createElement('div')
   const icon = props.draggableMarkerIcon || props.markerIcon
+  clearTimeout(dragTimeoutId.value)
   if (el) {
     el.classList.add('marker', 'draggable')
     const markerIcon = document.createElement('div')
@@ -270,7 +271,6 @@ function createDraggableMarker(coords: any) {
     el.style.zIndex = '99999'
     el.classList.add('toggle-show')
     markerAnimating.value = true
-    clearTimeout(dragTimeoutId.value)
     dragTimeoutId.value = setTimeout(() => {
       el.classList.remove('toggle-show')
       markerAnimating.value = false
@@ -319,11 +319,11 @@ function setDraggableMarkerCoordinates(coordinates: any[]) {
 }
 function removeDraggableMarker() {
   const el = draggableMarker.value?.getElement()
+  clearTimeout(dragTimeoutId.value)
   if (el) {
     el.classList.add('toggle-hide')
     markerAnimating.value = true
   }
-  clearTimeout(dragTimeoutId.value)
   dragTimeoutId.value = setTimeout(() => {
     draggableMarker.value?.remove()
     draggableMarker.value = null
