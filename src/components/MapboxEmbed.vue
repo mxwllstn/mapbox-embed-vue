@@ -280,6 +280,7 @@ function createDraggableMarker(coords: any) {
       dragCreateTimeoutId.value = setTimeout(() => {
         el.classList.remove('toggle-show')
         markerAnimating.value = false
+        clearTimeout(dragCreateTimeoutId.value)
       }, 900)
     }
 
@@ -339,12 +340,12 @@ function removeDraggableMarker() {
       markerAnimating.value = false
     } else {
       markerAnimating.value = true
-
       dragRemoveTimeoutId.value = setTimeout(() => {
         draggableMarker.value?.remove()
         draggableMarker.value = null
         el.classList.remove('toggle-hide')
         markerAnimating.value = false
+        clearTimeout(dragRemoveTimeoutId.value)
       }, 900)
     }
   }
