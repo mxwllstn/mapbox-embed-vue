@@ -257,8 +257,7 @@ function createMarker(coords: any, ix: number) {
     .setLngLat(coords)
     .addTo(map.value as mapboxgl.Map)
 }
-async function createDraggableMarker(coords: any) {
-  console.log(removeDraggableTimeoutId.value, createDraggableTimeoutId.value)
+function createDraggableMarker(coords: any) {
   if (removeDraggableTimeoutId.value) {
     clearTimeout(removeDraggableTimeoutId.value)
     removeDraggableTimeoutId.value = null
@@ -266,7 +265,6 @@ async function createDraggableMarker(coords: any) {
     draggableMarker.value = null
     markerAnimating.value = false
   }
-  await nextTick()
   const el = document.createElement('div')
   const icon = props.draggableMarkerIcon || props.markerIcon
   if (el) {
@@ -324,8 +322,7 @@ function setDraggableMarkerCoordinates(coordinates: any[]) {
   setDraggableMarkerStyle(coordinates.join())
   emit('draggableMarkerMoved', { lng: coordinates[0], lat: coordinates[1] })
 }
-async function removeDraggableMarker() {
-  console.log(removeDraggableTimeoutId.value, createDraggableTimeoutId.value)
+function removeDraggableMarker() {
   const el = draggableMarker.value?.getElement()
   if (createDraggableTimeoutId.value) {
     clearTimeout(createDraggableTimeoutId.value)
@@ -333,7 +330,6 @@ async function removeDraggableMarker() {
     el.classList.remove('toggle-show')
     markerAnimating.value = false
   }
-  await nextTick()
   if (el) {
     el.classList.add('toggle-hide')
     markerAnimating.value = true
