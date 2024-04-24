@@ -382,20 +382,13 @@ defineExpose({
 })
 </script>
 
-<style lang="scss">
-@import 'mapbox-gl/dist/mapbox-gl.css';
-
-body {
-  margin: 0;
-  padding: 0;
-}
-
+<style lang="scss" scoped>
 .map {
   width: 100%;
   height: 100%;
 }
 
-.marker {
+:deep(.marker) {
   width: 40px;
   height: 40px;
   cursor: pointer;

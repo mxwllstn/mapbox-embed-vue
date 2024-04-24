@@ -15,7 +15,7 @@ import { computed, ref, watch } from 'vue'
 import * as turf from '@turf/turf'
 import MapboxEmbed from './components/MapboxEmbed.vue'
 
-const mapboxAccessToken = ref(import.meta.env.VITE_MAPBOX_ACCESS_TOKEN)
+const mapboxAccessToken = ref(import.meta.env.VITE_MAPBOX_ACCESS_TOKEN as string)
 const mapboxCustomStyleUrl = ref(import.meta.env.VITE_MAPBOX_CUSTOM_STYLE_URL)
 const markerIcon = ref('marker.svg')
 const markerIconAlt = ref('marker-alt.svg')
@@ -140,6 +140,11 @@ function setBackgroundImage(el: { style: { backgroundImage: string } }, image: s
 </script>
 
 <style lang="scss">
+body {
+  margin: 0;
+  padding: 0;
+}
+
 .container {
   width: 100vw;
   height: 100vh;

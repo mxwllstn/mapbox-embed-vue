@@ -8,6 +8,13 @@ import cssInjectedByJsPlugin from 'vite-plugin-css-injected-by-js'
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [vue(), svgLoader(), dts(), cssInjectedByJsPlugin()],
+  css: {
+    preprocessorOptions: {
+      scss: {
+        additionalData: `@import "node_modules/mapbox-gl/dist/mapbox-gl.css";`,
+      },
+    },
+  },
   build: {
     lib: {
       entry: path.resolve(__dirname, 'src/components/index.ts'),
