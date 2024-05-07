@@ -1,11 +1,8 @@
 <template>
   <div class="container">
     <MapboxEmbed
-      :coordinates="coordinatesString" map-style="custom" :custom-style-url="mapboxCustomStyleUrl" zoom="3"
-      :access-token="mapboxAccessToken" :marker-icons="[markerIcon, markerIconAlt]" marker-anchor="center"
-      :marker-labels="markerLabels" :show-draggable-marker="showDraggableMarker" :draggable-marker-icon="markerIconDraggable" :draggable-marker-coordinates="draggableMarkerCoordinates" @map-loaded="onMapLoad" @marker-clicked="onMarkerClick"
-      @coordinates-updated="onCoordinatesUpdated" @map-moved="onMapMoved" @map-zoomed="onMapZoomed" @map-clicked="showDraggableMarker = true"
-      @map-idled="onMapIdled" @draggable-marker-moved="handleDraggableMarkerMoved" @draggable-marker-clicked="showDraggableMarker = false"
+      :cluster-markers="true" :coordinates="coordinatesString" map-style="custom" :custom-style-url="mapboxCustomStyleUrl" zoom="3"
+      :access-token="mapboxAccessToken" marker-anchor="center" :marker-icons="markerIcons" :marker-labels="markerLabels" :show-draggable-marker="showDraggableMarker" :draggable-marker-icon="markerIconDraggable" :draggable-marker-coordinates="draggableMarkerCoordinates" :active-marker="activeMarker" @map-loaded="onMapLoad" @marker-clicked="onMarkerClick" @coordinates-updated="onCoordinatesUpdated" @map-moved="onMapMoved" @map-zoomed="onMapZoomed" @map-clicked="handleMapClicked" @map-idled="onMapIdled" @draggable-marker-moved="handleDraggableMarkerMoved" @draggable-marker-clicked="handleDraggableMarkerClicked"
     />
   </div>
 </template>
@@ -15,10 +12,19 @@ import { computed, ref, watch } from 'vue'
 import * as turf from '@turf/turf'
 import MapboxEmbed from './components/MapboxEmbed.vue'
 
+function handleMapClicked() {
+  showDraggableMarker.value = true
+}
+function handleDraggableMarkerClicked() {
+  showDraggableMarker.value = false
+}
+
 const mapboxAccessToken = ref(import.meta.env.VITE_MAPBOX_ACCESS_TOKEN as string)
 const mapboxCustomStyleUrl = ref(import.meta.env.VITE_MAPBOX_CUSTOM_STYLE_URL)
-const markerIcon = ref('marker.svg')
-const markerIconAlt = ref('marker-alt.svg')
+const markerIcon = ref('marker.png')
+const markerIconAlt = ref('marker-alt.png')
+const markerIcons = computed(() => [markerIcon.value, markerIconAlt.value])
+// const markerIcons = ref()
 const markerIconDraggable = ref('marker-draggable.svg')
 
 const defaultCoords = computed(() => ['34.072799, -118.262034', '34.077072, -118.269450'])
@@ -36,6 +42,38 @@ function onMapLoad([mapEmbed, coords, markers]: any) {
   addLines(mapEmbed, coords)
   map.value = mapEmbed
   markers.value = markers
+
+  if (markerIcons.value) {
+    map.value.setLayoutProperty('cluster', 'text-field', ['get', 'labels'])
+    map.value.setPaintProperty('unclustered-point', 'icon-opacity', 0.7)
+  } else {
+    map.value.setPaintProperty('unclustered-point', 'circle-color', [
+      'step',
+      ['get', 'active'],
+      '#fff',
+      1,
+      '#000',
+    ])
+
+    map.value.setPaintProperty('unclustered-point', 'circle-stroke-color', [
+      'step',
+      ['get', 'active'],
+      '#fff',
+      1,
+      '#000',
+    ])
+
+    map.value.setPaintProperty('unclustered-point-text', 'text-color', [
+      'step',
+      ['get', 'active'],
+      '#000000',
+      1,
+      '#ffffff',
+    ])
+    map.value.setLayoutProperty('cluster-count', 'text-field', ['get', 'labels'])
+    // map.value.setLayoutProperty('cluster-count', 'text-field', null)
+    // map.value.setLayoutProperty('cluster-count', 'text-field', ['get', 'point_count_abbreviated'])
+  }
 }
 function onMapMoved() {
   console.log('map moved')
@@ -109,33 +147,17 @@ function addLines(map: any, coords: any) {
         'line-width': 2,
         'line-color': '#fff',
       },
+      minzoom: 14,
     })
   })
   map.resize()
 }
-function onMarkerClick([marker]: any): void {
-  toggleMarker(marker)
-}
-function toggleMarker(marker: any) {
-  const el = marker.getElement().firstChild
-  const { backgroundImage } = el.style
-  if (backgroundImage.includes(markerIcon.value)) {
-    setBackgroundImage(el, markerIconAlt.value)
-  } else {
-    setBackgroundImage(el, markerIcon.value)
-  }
-}
-// function toggleMarkerByIx(ix: any) {
-//   const el = markers.value[ix].getElement()
-//   const { backgroundImage } = el.style
-//   if (backgroundImage.includes(markerIcon.value)) {
-//     setBackgroundImage(el, markerIconAlt.value)
-//   } else {
-//     setBackgroundImage(el, markerIcon.value)
-//   }
-// }
-function setBackgroundImage(el: { style: { backgroundImage: string } }, image: string) {
-  el.style.backgroundImage = `url('/${image}')`
+
+const activeMarker = ref()
+
+function onMarkerClick(feature: any): void {
+  const id = feature.properties.id
+  activeMarker.value = id === activeMarker.value ? null : id
 }
 </script>
 
