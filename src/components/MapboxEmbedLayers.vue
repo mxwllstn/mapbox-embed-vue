@@ -6,6 +6,7 @@
 </template>
 
 <script lang="ts" setup>
+import 'mapbox-gl/dist/mapbox-gl.css'
 import mapboxgl from 'mapbox-gl'
 import * as turf from '@turf/turf'
 import { computed, nextTick, onBeforeMount, onMounted, onUnmounted, ref, watch } from 'vue'
@@ -319,7 +320,7 @@ function initCoords() {
               'icon-size': 0.5,
               'icon-padding': 0,
               'text-field': ['get', 'label'],
-              'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+              'text-font': ['ITC Franklin Gothic Std Demi Condensed', 'DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
               'text-size': 12,
               'icon-allow-overlap': true,
               'icon-ignore-placement': true,

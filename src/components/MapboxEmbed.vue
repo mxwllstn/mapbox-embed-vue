@@ -6,6 +6,7 @@
 </template>
 
 <script lang="ts" setup>
+import 'mapbox-gl/dist/mapbox-gl.css'
 import mapboxgl from 'mapbox-gl'
 import * as turf from '@turf/turf'
 import { computed, nextTick, onBeforeMount, onMounted, onUnmounted, ref, watch } from 'vue'
