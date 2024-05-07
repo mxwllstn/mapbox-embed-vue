@@ -280,6 +280,15 @@ function initCoords() {
           })
 
           map.value.addLayer({
+            id: 'background-layer',
+            type: 'background',
+            paint: {
+              'background-color': '#ffffff',
+              'background-opacity': 0,
+            },
+          })
+
+          map.value.addLayer({
             id: 'cluster',
             type: 'symbol',
             source: 'points',
