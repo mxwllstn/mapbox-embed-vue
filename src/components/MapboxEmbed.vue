@@ -30,9 +30,9 @@ const props = defineProps({
     type: String,
     default: null,
   },
-  clusterMarkers: {
+  showMarkers: {
     type: Boolean,
-    default: false,
+    default: true,
   },
   zoom: {
     type: String,
@@ -90,19 +90,12 @@ const props = defineProps({
     type: Object,
     default: null,
   },
-  activeMarker: {
-    type: Number,
-    default: null,
-  },
-  dataProperties: {
-    type: Object,
-    default: null,
-  },
 })
 const emit = defineEmits(['mapLoaded', 'markerClicked', 'coordinatesUpdated', 'mapMoved', 'mapZoomed', 'mapIdled', 'mapClicked', 'draggableMarkerClicked', 'draggableMarkerMoved'])
 
 const map = ref()
 const markers = ref()
+const markerZIndex = ref(1)
 const mapId = ref()
 const draggableMarker = ref()
 const createDraggableTimeoutId = ref()
@@ -143,6 +136,8 @@ watch(coordsArray, async (newCoords, oldCoords) => {
     const newCoordinates = parseCoordinates(newCoords as any)
     const oldCoordinates = parseCoordinates(oldCoords as any)
     if (newCoordinates.length > oldCoordinates.length) {
+      const ix = newCoordinates.length - 1
+      props.showMarkers && markers.value?.push(createMarker(newCoordinates[ix], ix))
       setBoundsToCoords()
     }
     await nextTick()
@@ -157,18 +152,12 @@ watch(
   },
 )
 
-watch(
-  () => props.activeMarker,
-  () => {
-    map.value.getSource('points').setData(pointsData.value)
-  },
-)
-
 onBeforeMount(() => {
   mapboxgl.accessToken = props.accessToken
 })
 
 onMounted(async () => {
+  console.log(props.coordinates)
   mapId.value = `map${globalThis.crypto.getRandomValues(new Uint32Array(10))[0]}`
   await nextTick()
   map.value = new mapboxgl.Map({
@@ -177,7 +166,7 @@ onMounted(async () => {
     style: styleUrl.value, // style URL
     center: center.value || [0, 0], // starting position [lng, lat]
     zoom: startingZoom.value, // starting zoom,
-    fadeDuration: 0,
+    // projection: 'naturalEarth' // starting projection
   } as MapBoxOptionsExtended)
   map.value.dragRotate.disable()
   map.value.touchZoomRotate.disableRotation()
@@ -207,31 +196,6 @@ function toggleMarkerClicking() {
   setTimeout(() => markerClicking.value = false, 10)
 }
 
-const pointsData = computed(() => {
-  return {
-    type: 'FeatureCollection',
-    features: coordsArray.value
-      ? coordsArray.value.map((coords: mapboxgl.LngLatLike, ix: number) => {
-        return {
-          type: 'Feature',
-          properties: {
-            id: ix,
-            active: props.activeMarker === ix ? 1 : 0,
-            label: props.markerLabels && props.markerLabels[ix],
-            ...(props.dataProperties && props.dataProperties[ix]),
-          },
-          geometry: {
-            type: 'Point',
-            coordinates: coords as any,
-          },
-        }
-      })
-      : [],
-  }
-})
-
-const hasMarkerIcons = computed(() => props.markerIcons?.length)
-
 function initCoords() {
   if (map.value && coordsArray.value) {
     map.value.on('moveend', () => {
@@ -248,192 +212,51 @@ function initCoords() {
       setTimeout(() => doubleClicking.value = false, 10)
     })
 
-    map.value.on('click', async (e: any) => {
-      await nextTick()
+    map.value.on('click', (e: any) => {
       if (!markerClicking.value && !markerAnimating.value) {
         const { lat, lng } = e.lngLat || {}
         props.showDraggableMarker && setDraggableMarkerCoordinates([lng, lat])
         emit('mapClicked')
       }
     })
-    map.value.on('load', async () => {
-      await nextTick()
-      map.value?.addSource('points', {
-        cluster: props.clusterMarkers,
-        clusterMaxZoom: 14, // Max zoom to cluster points on
-        clusterRadius: 50, // Radius of each cluster when clustering points (defaults to 50),
-        clusterProperties: {
-          labels: ['concat', ['concat', ['get', 'label'], '\n']],
-        },
-        type: 'geojson',
-        data: pointsData.value,
-      })
-      if (hasMarkerIcons.value) {
-        const marker = props.markerIcons?.[0] || 'marker.png'
-        const markerAlt = props.markerIcons?.[1] || 'marker-alt.png'
-
-        map.value?.loadImage(marker as any, (_error: any, image: any) => {
-          map.value?.addImage('marker', image as any)
-
-          map.value?.loadImage(markerAlt as any, (_error: any, image: any) => {
-            map.value?.addImage('marker-alt', image as any)
-          })
-
-          map.value.addLayer({
-            id: 'cluster',
-            type: 'symbol',
-            source: 'points',
-            filter: ['has', 'point_count'],
-            layout: {
-              'icon-image': 'marker',
-              'icon-size': 0.5,
-              'icon-padding': 5,
-              'text-field': ['get', 'point_count_abbreviated'],
-              'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
-              'text-size': 12,
-            },
-          })
-
-          map.value?.addLayer({
-            id: 'unclustered-point',
-            type: 'symbol',
-            source: 'points',
-            filter: ['!', ['has', 'point_count']],
-            layout: {
-              'icon-image': [
-                'step',
-                ['get', 'active'],
-                'marker',
-                1,
-                'marker-alt',
-              ],
-              'icon-size': 0.5,
-              'icon-padding': 0,
-              'text-field': ['get', 'label'],
-              'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
-              'text-size': 12,
-              'icon-allow-overlap': true,
-              'icon-ignore-placement': true,
-              'text-allow-overlap': true,
-              'text-ignore-placement': true,
-            },
-            paint: {
-              'text-color': [
-                'step',
-                ['get', 'active'],
-                '#000000',
-                1,
-                '#ffffff',
-              ],
-            },
-          })
-          emit('mapLoaded', [map.value, coordsArray.value, markers.value])
-        })
-      } else {
-        map.value.addLayer({
-          id: 'cluster',
-          type: 'circle',
-          source: 'points',
-          filter: ['has', 'point_count'],
-          paint: {
-            'circle-color': '#fff',
-            'circle-radius': 28,
-          },
-        })
-
-        map.value.addLayer({
-          id: 'cluster-count',
-          type: 'symbol',
-          source: 'points',
-          filter: ['has', 'point_count'],
-          layout: {
-            'text-field': ['get', 'point_count_abbreviated'],
-            'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
-            'text-size': 12,
-            'icon-allow-overlap': true,
-            'icon-ignore-placement': true,
-            'text-allow-overlap': true,
-            'text-ignore-placement': true,
-          },
-        })
-
-        map.value?.addLayer({
-          id: 'unclustered-point',
-          type: hasMarkerIcons.value ? 'symbol' : 'circle',
-          source: 'points',
-          filter: ['!', ['has', 'point_count']],
-          paint: {
-            'circle-color': '#ffffff',
-            'circle-opacity': 0.7,
-            'circle-radius': 14,
-            'circle-stroke-color': '#ffffff',
-            'circle-stroke-width': 1,
-          },
-        })
-
-        map.value?.addLayer({
-          id: 'unclustered-point-text',
-          type: 'symbol',
-          source: 'points',
-          filter: ['!', ['has', 'point_count']],
-          layout: {
-            'text-field': ['get', 'label'],
-            'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
-            'text-size': 12,
-            'icon-allow-overlap': true,
-            'icon-ignore-placement': true,
-            'text-allow-overlap': true,
-            'text-ignore-placement': true,
-          },
-          paint: {
-            'text-color': '#000000',
-          },
-        })
-        emit('mapLoaded', [map.value, coordsArray.value, markers.value])
-      }
-    })
-
-    map.value.on('mouseenter', ['cluster', 'unclustered-point'], () => {
-      map.value.getCanvas().style.cursor = 'pointer'
-    })
-    map.value.on('mouseleave', ['cluster', 'unclustered-point'], () => {
-      map.value.getCanvas().style.cursor = ''
-    })
-
-    map.value.on('click', 'cluster', (e: any) => {
-      toggleMarkerClicking()
-      const features = map.value.queryRenderedFeatures(e.point, {
-        layers: ['cluster'],
-      })
-      const clusterId = features[0].properties.cluster_id
-      map.value.getSource('points').getClusterExpansionZoom(
-        clusterId,
-        (err: any, zoom: any) => {
-          if (err) {
-            return
+    markers.value = props.showMarkers
+      ? coordsArray.value.map((coords, ix) => {
+        const marker = createMarker(coords, ix)
+        const el = marker?.getElement()
+        if (el) {
+          el.onclick = () => {
+            markerZIndex.value++
+            el.style.zIndex = String(markerZIndex.value)
+            emit('markerClicked', [marker, ix])
+            toggleMarkerClicking()
           }
-
-          map.value.easeTo({
-            center: features[0].geometry.coordinates,
-            zoom,
-          })
-        },
-      )
-    })
-
-    map.value.on('click', 'unclustered-point', (e: any) => {
-      toggleMarkerClicking()
-      emit('markerClicked', e.features[0])
-    })
-
-    markers.value = []
+        }
+        return marker
+      })
+      : []
+    emit('mapLoaded', [map.value, coordsArray.value, markers.value])
     props.showDraggableMarker && createDraggableMarker(props.draggableMarkerCoordinates || map.value.getCenter())
     setBoundsToCoords()
   } else if (map.value) {
     emit('mapLoaded', [map.value, null])
   }
 }
-
+function createMarker(coords: any, ix: number) {
+  const el = props.markerIcons || props.markerIcon ? document.createElement('div') : undefined
+  const icon = props.markerIcons ? props.markerIcons[ix] : props.markerIcon
+  if (el) {
+    el.className = 'marker'
+    const markerIcon = document.createElement('div')
+    markerIcon.className = 'marker-icon' as any
+    markerIcon.style.backgroundImage = `url("${icon}")` as any
+    el.appendChild(markerIcon)
+    el.id = `marker${ix}`
+    props.markerLabels && el.style.setProperty('--marker-label', `"${props.markerLabels[ix]}"`)
+  }
+  return new mapboxgl.Marker({ element: el, anchor: props.markerAnchor as mapboxgl.Anchor, rotationAlignment: 'map' })
+    .setLngLat(coords)
+    .addTo(map.value as mapboxgl.Map)
+}
 function createDraggableMarker(coords: any) {
   if (removeDraggableTimeoutId.value) {
     clearTimeout(removeDraggableTimeoutId.value)
