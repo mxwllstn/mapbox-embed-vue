@@ -14,7 +14,6 @@ import { computed, nextTick, onBeforeMount, onMounted, onUnmounted, ref, watch }
 export type Styles =
   | 'streets'
   | 'outdoors'
-  | 'light'
   | 'dark'
   | 'satellite'
   | 'satellite-streets'
@@ -120,8 +119,6 @@ const styleUrl = computed(() => {
       return 'mapbox://styles/mapbox/streets-v11'
     case 'outdoors':
       return 'mapbox://styles/mapbox/outdoors-v11'
-    case 'light':
-      return 'mapbox://styles/mapbox/light-v10'
     case 'dark':
       return 'mapbox://styles/mapbox/dark-v10'
     case 'satellite':
@@ -554,7 +551,7 @@ function setBoundsToCoords(options?: {
 }
 function updateCoords() {
   if (map.value && coordsArray.value) {
-    console.log(coordsArray.value)
+    // console.log(coordsArray.value)
     coordsArray.value.forEach((coords, ix) => {
       /* update marker coords */
       markers.value?.[ix]?.setLngLat(coords)
