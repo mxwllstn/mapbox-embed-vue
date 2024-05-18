@@ -33,7 +33,7 @@
     "preview": "vite preview",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "prepublish": "yarn lint && yarn build",
+    "prepublish": "pnpm lint && pnpm build",
     "preinstall": "npx only-allow pnpm"
   },
   "dependencies": {
