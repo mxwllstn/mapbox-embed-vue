@@ -2,6 +2,7 @@
   "name": "@mxwllstn/mapbox-embed-vue",
   "type": "module",
   "version": "0.0.90",
+  "packageManager": "pnpm@9.0.4+sha512.c374b52de3de88c58fd8333df664a737279cdb0e1344ba4054d3b1fffa9a1a3670854f755dca4f16adea3f14be9896a7fcaf167409fe0c1ad60475271dafe81a",
   "description": "Vue component that embeds a mapbox map with a marker",
   "author": "Max Stein <maxwell.stein@gmail.com> (https://maxstein.net",
   "license": "MIT",
@@ -32,24 +33,24 @@
     "preview": "vite preview",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "prepublish": "yarn lint && yarn build"
+    "prepublish": "yarn lint && yarn build",
+    "preinstall": "npx only-allow pnpm"
   },
   "dependencies": {
-    "@turf/turf": "^7.0.0-alpha.114",
+    "@turf/turf": "7.0.0-alpha.116",
     "@types/mapbox-gl": "^3.1.0",
     "mapbox-gl": "^3.3.0"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^2.16.2",
+    "@antfu/eslint-config": "^2.18.1",
     "@babel/types": "^7.24.5",
-    "@types/node": "^20.12.10",
-    "@types/svgo": "^3.0.0",
-    "@typescript-eslint/eslint-plugin": "^7.8.0",
-    "@typescript-eslint/parser": "^7.8.0",
+    "@types/node": "^20.12.12",
+    "@typescript-eslint/eslint-plugin": "^7.9.0",
+    "@typescript-eslint/parser": "^7.9.0",
     "@vitejs/plugin-vue": "^5.0.4",
-    "eslint": "^9.2.0",
-    "postcss-html": "^1.6.0",
-    "sass": "^1.77.0",
+    "eslint": "^8.57.0",
+    "postcss-html": "^1.7.0",
+    "sass": "^1.77.2",
     "stylelint": "^16.5.0",
     "stylelint-config-recommended-vue": "^1.5.0",
     "stylelint-config-standard-scss": "^13.1.0",
@@ -60,6 +61,7 @@
     "vite-svg-loader": "^5.1.0",
     "vue": "^3.4.27",
     "vue-eslint-parser": "^9.4.2",
-    "vue-tsc": "^2.0.16"
+    "vue-router": "^4.3.2",
+    "vue-tsc": "^2.0.19"
   }
 }
