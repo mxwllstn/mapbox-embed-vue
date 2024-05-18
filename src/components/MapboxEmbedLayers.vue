@@ -165,6 +165,23 @@ watch(
   },
 )
 
+watch(
+  () => props.markerIcons,
+  () => {
+    map.value?.loadImage(props.markerIcons[0] as any, (_error: any, image: any) => {
+      map.value?.removeImage('marker', image as any)
+      map.value?.addImage('marker', image as any)
+    })
+    map.value?.loadImage(props.markerIcons[1] as any, (_error: any, image: any) => {
+      map.value?.removeImage('marker-alt', image as any)
+      map.value?.addImage('marker-alt', image as any)
+    })
+  },
+  {
+    deep: true,
+  },
+)
+
 onBeforeMount(() => {
   mapboxgl.accessToken = props.accessToken
 })
@@ -320,7 +337,7 @@ function initCoords() {
               'icon-size': 0.5,
               'icon-padding': 0,
               'text-field': ['get', 'label'],
-              'text-font': ['ITC Franklin Gothic Std Demi Condensed', 'DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+              'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
               'text-size': 12,
               'icon-allow-overlap': true,
               'icon-ignore-placement': true,
