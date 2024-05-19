@@ -95,6 +95,10 @@ const props = defineProps({
     type: Number,
     default: null,
   },
+  disabledMarkers: {
+    type: Array,
+    default: null,
+  },
   dataProperties: {
     type: Object,
     default: null,
@@ -103,7 +107,6 @@ const props = defineProps({
 const emit = defineEmits(['mapLoaded', 'markerClicked', 'coordinatesUpdated', 'mapMoved', 'mapZoomed', 'mapIdled', 'mapClicked', 'draggableMarkerClicked', 'draggableMarkerMoved'])
 
 const map = ref()
-const markers = ref()
 const mapId = ref()
 const draggableMarker = ref()
 const createDraggableTimeoutId = ref()
@@ -159,9 +162,12 @@ watch(
 )
 
 watch(
-  () => props.activeMarker,
+  () => [props.activeMarker, props.disabledMarkers],
   () => {
     map.value.getSource('points').setData(pointsData.value)
+  },
+  {
+    deep: true,
   },
 )
 
@@ -235,6 +241,7 @@ const pointsData = computed(() => {
           properties: {
             id: ix,
             active: props.activeMarker === ix ? 1 : 0,
+            disabled: props.disabledMarkers.includes(ix) ? 1 : 0,
             label: props.markerLabels && props.markerLabels[ix],
             ...(props.dataProperties && props.dataProperties[ix]),
           },
@@ -345,6 +352,20 @@ function initCoords() {
               'text-ignore-placement': true,
             },
             paint: {
+              'icon-opacity': [
+                'step',
+                ['get', 'disabled'],
+                1,
+                1,
+                0.5,
+              ],
+              'text-opacity': [
+                'step',
+                ['get', 'disabled'],
+                1,
+                1,
+                0.5,
+              ],
               'text-color': [
                 'step',
                 ['get', 'active'],
@@ -354,7 +375,7 @@ function initCoords() {
               ],
             },
           })
-          emit('mapLoaded', [map.value, coordsArray.value, markers.value])
+          emit('mapLoaded', [map.value, coordsArray.value])
         })
       } else {
         map.value.addLayer({
@@ -416,12 +437,16 @@ function initCoords() {
             'text-color': '#000000',
           },
         })
-        emit('mapLoaded', [map.value, coordsArray.value, markers.value])
+        emit('mapLoaded', [map.value, coordsArray.value])
       }
     })
 
-    map.value.on('mouseenter', ['cluster', 'unclustered-point'], () => {
-      map.value.getCanvas().style.cursor = 'pointer'
+    map.value.on('mouseenter', ['cluster', 'unclustered-point'], (e: any) => {
+      if (e.features?.[0]?.properties?.disabled) {
+        map.value.getCanvas().style.cursor = ''
+      } else {
+        map.value.getCanvas().style.cursor = 'pointer'
+      }
     })
     map.value.on('mouseleave', ['cluster', 'unclustered-point'], () => {
       map.value.getCanvas().style.cursor = ''
@@ -453,7 +478,6 @@ function initCoords() {
       emit('markerClicked', e.features[0])
     })
 
-    markers.value = []
     props.showDraggableMarker && createDraggableMarker(props.draggableMarkerCoordinates || map.value.getCenter())
     setBoundsToCoords()
   } else if (map.value) {
@@ -571,10 +595,10 @@ function setBoundsToCoords(options?: {
 }
 function updateCoords() {
   if (map.value && coordsArray.value) {
-    coordsArray.value.forEach((coords, ix) => {
-      /* update marker coords */
-      markers.value?.[ix]?.setLngLat(coords)
-    })
+    // coordsArray.value.forEach((coords, ix) => {
+    //   /* update marker coords */
+    //   markers.value?.[ix]?.setLngLat(coords)
+    // })
     emit('coordinatesUpdated', [map.value, coordsArray.value])
   }
 }

@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <MapboxEmbedLayers
-      :coordinates="coordinatesString" map-style="custom" :custom-style-url="mapboxCustomStyleUrl" zoom="3" :access-token="mapboxAccessToken" :marker-icons="markerIcons" marker-anchor="center" :active-marker="activeMarker" :marker-labels="markerLabels" :show-draggable-marker="showDraggableMarker" :draggable-marker-icon="markerIconDraggable" :draggable-marker-coordinates="draggableMarkerCoordinates" @map-loaded="onMapLoad" @marker-clicked="onMarkerClick" @coordinates-updated="onCoordinatesUpdated" @map-moved="onMapMoved" @map-zoomed="onMapZoomed" @map-clicked="showDraggableMarker = true" @map-idled="onMapIdled" @draggable-marker-moved="handleDraggableMarkerMoved" @draggable-marker-clicked="showDraggableMarker = false"
+      :coordinates="coordinatesString" map-style="custom" :custom-style-url="mapboxCustomStyleUrl" zoom="3" :access-token="mapboxAccessToken" :marker-icons="markerIcons" marker-anchor="center" :active-marker="activeMarker" :marker-labels="markerLabels" :show-draggable-marker="showDraggableMarker" :disabled-markers="disabled" :draggable-marker-icon="markerIconDraggable" :draggable-marker-coordinates="draggableMarkerCoordinates" @map-loaded="onMapLoad" @marker-clicked="onMarkerClick" @coordinates-updated="onCoordinatesUpdated" @map-moved="onMapMoved" @map-zoomed="onMapZoomed" @map-clicked="showDraggableMarker = true" @map-idled="onMapIdled" @draggable-marker-moved="handleDraggableMarkerMoved" @draggable-marker-clicked="showDraggableMarker = false"
     />
   </div>
 </template>
@@ -18,6 +18,8 @@ const markerIconAlt = ref('marker-alt.png')
 const markerIconDraggable = ref('marker-draggable.png')
 const markerIcons = ref([markerIcon.value, markerIconAlt.value])
 
+const disabled = ref([1])
+
 const defaultCoords = computed(() => ['34.072799, -118.262034', '34.077072, -118.269450'])
 const locations = computed(() => defaultCoords.value)
 const markerLabels = computed(() => locations.value.map((_val, idx) => (idx + 1).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false })))
@@ -29,10 +31,20 @@ const draggableMarkerCoordinates = ref()
 
 const map = ref()
 
-function onMapLoad([mapEmbed, coords, markers]: any) {
-  addLines(mapEmbed, coords)
+function onMapLoad([mapEmbed, coords]: any) {
   map.value = mapEmbed
-  markers.value = markers
+  addLines(coords)
+
+  // map.value.setLayoutProperty('cluster', 'text-field', ['get', 'labels'])
+  // map.value.setPaintProperty('unclustered-point', 'icon-opacity', 0.7)
+
+  map.value.setPaintProperty('unclustered-point', 'icon-opacity', [
+    'step',
+    ['get', 'disabled'],
+    0.9,
+    1,
+    0.3,
+  ])
 }
 function onMapMoved() {
   console.log('map moved')
@@ -76,8 +88,25 @@ function parseRoutes(coords: any[]) {
     }),
   }
 }
-function addLines(map: any, coords: any) {
+function addLines(coords: any) {
   const routes = parseRoutes(coords)
+
+  map.value.addSource('routes', {
+    type: 'geojson',
+    data: routes as any,
+  })
+
+  map.value.addLayer({
+    id: 'route',
+    source: 'routes',
+    type: 'line',
+    paint: {
+      'line-width': 2,
+      'line-color': '#fff',
+    },
+  })
+
+  map.value.moveLayer('route', 'unclustered-point')
 
   routes.features.forEach((route: { geometry: { coordinates: any } }) => {
     const lineDistance = turf.length(route as any)
@@ -92,34 +121,20 @@ function addLines(map: any, coords: any) {
     route.geometry.coordinates = arc as any
   })
 
-  map.on('load', () => {
-    map.addSource('routes', {
-      type: 'geojson',
-      data: routes as any,
-    })
-
-    map.addLayer({
-      id: 'route',
-      source: 'routes',
-      type: 'line',
-      paint: {
-        'line-width': 2,
-        'line-color': '#fff',
-      },
-    })
-  })
-  map.resize()
+  map.value.resize()
 }
 const activeMarker = ref()
 
 function onMarkerClick(feature: any): void {
-  const id = feature.properties.id
-  if (id === activeMarker.value) {
-    toggleAltIcon()
-  } else {
-    resetAltIcon()
+  const { id, disabled } = feature.properties || {}
+  if (!disabled) {
+    if (id === activeMarker.value) {
+      toggleAltIcon()
+    } else {
+      resetAltIcon()
+    }
+    activeMarker.value = id
   }
-  activeMarker.value = id
 }
 function resetAltIcon() {
   markerIcons.value[1] = markerIconAlt.value
