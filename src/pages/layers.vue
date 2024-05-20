@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <MapboxEmbedLayers
-      :coordinates="coordinatesString" map-style="custom" :custom-style-url="mapboxCustomStyleUrl" zoom="3" :access-token="mapboxAccessToken" :marker-icons="markerIcons" marker-shadow-icon="marker-shadow.png" :marker-active-icon="markerActiveIcon" marker-anchor="center" :active-marker="activeMarker" :marker-labels="markerLabels" :show-draggable-marker="showDraggableMarker" :disabled-markers="disabled" :draggable-marker-icon="markerIconDraggable" :draggable-marker-coordinates="draggableMarkerCoordinates" @map-loaded="onMapLoad" @marker-clicked="onMarkerClick" @coordinates-updated="onCoordinatesUpdated" @map-moved="onMapMoved" @map-zoomed="onMapZoomed" @map-clicked="showDraggableMarker = true" @map-idled="onMapIdled" @draggable-marker-moved="handleDraggableMarkerMoved" @draggable-marker-clicked="showDraggableMarker = false"
+      :coordinates="coordinatesString" map-style="custom" :custom-style-url="mapboxCustomStyleUrl" zoom="3" :access-token="mapboxAccessToken" :marker-icons="markerIcons" :marker-active-icon="markerActiveIcon" marker-anchor="center" :active-marker="activeMarker" :marker-labels="markerLabels" :show-draggable-marker="showDraggableMarker" :disabled-markers="disabled" :draggable-marker-icon="markerIconDraggable" :draggable-marker-coordinates="draggableMarkerCoordinates" @map-loaded="onMapLoad" @marker-clicked="onMarkerClick" @coordinates-updated="onCoordinatesUpdated" @map-moved="onMapMoved" @map-zoomed="onMapZoomed" @map-clicked="showDraggableMarker = true" @map-idled="onMapIdled" @draggable-marker-moved="handleDraggableMarkerMoved" @draggable-marker-clicked="showDraggableMarker = false"
     />
   </div>
 </template>
@@ -141,7 +141,7 @@ function resetActiveIcon() {
   markerActiveIcon.value = 'marker-active.png'
 }
 function toggleActiveIcon() {
-  markerActiveIcon.value = markerActiveIcon.value === 'marker-active.png' ? markerIconDraggable.value : 'marker-active.png'
+  markerActiveIcon.value = markerActiveIcon.value === 'marker-active.png' ? 'marker-active-2.png' : 'marker-active.png'
 }
 </script>
 

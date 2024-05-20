@@ -63,10 +63,6 @@ const props = defineProps({
     type: Array,
     default: null,
   },
-  markerShadowIcon: {
-    type: String,
-    default: null,
-  },
   markerActiveIcon: {
     type: String,
     default: null,
@@ -297,121 +293,113 @@ function initCoords() {
       if (hasMarkerIcons.value) {
         const marker = props.markerIcons?.[0] || 'marker.png'
         const markerAlt = props.markerIcons?.[1] || 'marker-alt.png'
-        const markerShadow = props.markerShadowIcon || 'marker-shadow.png'
         const markerActive = props.markerActiveIcon || 'marker-active.png'
 
         map.value?.loadImage(marker as any, (_error: any, image: any) => {
           map.value?.addImage('marker', image as any)
 
-          map.value?.loadImage(markerShadow as any, (_error: any, image: any) => {
-            map.value?.addImage('marker-shadow', image as any)
+          map.value?.loadImage(markerAlt as any, (_error: any, image: any) => {
+            map.value?.addImage('marker-alt', image as any)
 
-            map.value?.loadImage(markerAlt as any, (_error: any, image: any) => {
-              map.value?.addImage('marker-alt', image as any)
+            map.value?.loadImage(markerActive as any, (_error: any, image: any) => {
+              map.value?.addImage('marker-active', image as any)
 
-              map.value?.loadImage(markerActive as any, (_error: any, image: any) => {
-                map.value?.addImage('marker-active', image as any)
-
-                map.value.addLayer({
-                  id: 'background-layer',
-                  type: 'background',
-                  paint: {
-                    'background-color': '#ffffff',
-                    'background-opacity': 0,
-                  },
-                })
-
-                map.value.addLayer({
-                  id: 'cluster',
-                  type: 'symbol',
-                  source: 'points',
-                  filter: ['has', 'point_count'],
-                  layout: {
-                    'icon-image': 'marker',
-                    'icon-size': 0.5,
-                    'icon-padding': 5,
-                    'text-field': ['get', 'point_count_abbreviated'],
-                    'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
-                    'text-size': 12,
-                  },
-                })
-
-                map.value?.addLayer({
-                  id: 'unclustered-point',
-                  type: 'symbol',
-                  source: 'points',
-                  filter: ['!has', 'point_count'],
-                  layout: {
-                    'icon-image': 'marker',
-                    'icon-size': 0.5,
-                    'icon-padding': 0,
-                    'icon-allow-overlap': true,
-                    'icon-ignore-placement': true,
-                    'text-field': ['get', 'label'],
-                    'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
-                    'text-size': 12,
-                    'text-allow-overlap': true,
-                    'text-ignore-placement': true,
-                  },
-                  paint: {
-                    'icon-opacity': [
-                      'step',
-                      ['get', 'disabled'],
-                      1,
-                      1,
-                      0.5,
-                    ],
-                    'text-opacity': [
-                      'step',
-                      ['get', 'disabled'],
-                      1,
-                      1,
-                      0.5,
-                    ],
-                    'text-color': '#000000',
-                  },
-                })
-
-                if (props.markerShadowIcon) {
-                  map.value?.addLayer({
-                    id: 'unclustered-point-shadow',
-                    type: 'symbol',
-                    source: 'points',
-                    filter: ['!has', 'point_count'],
-                    layout: {
-                      'icon-image': 'marker-shadow',
-                      'icon-size': 0.5,
-                      'icon-padding': 0,
-                      'icon-offset': [0, 16],
-                      'icon-allow-overlap': true,
-                      'icon-ignore-placement': true,
-                    },
-                  })
-                }
-
-                map.value?.addLayer({
-                  id: 'unclustered-point-active',
-                  type: 'symbol',
-                  source: 'points',
-                  filter: ['all', ['!has', 'point_count'], ['==', 'active', 1]],
-                  layout: {
-                    'icon-image': 'marker-active',
-                    'icon-size': 0.5,
-                    'icon-padding': 0,
-                    'icon-allow-overlap': true,
-                    'icon-ignore-placement': true,
-                    'text-allow-overlap': true,
-                    'text-ignore-placement': true,
-                  },
-                  paint: {
-                    'icon-opacity': 1,
-                    'text-opacity': 1,
-                    'text-color': '#ffffff',
-                  },
-                })
-
-                emit('mapLoaded', [map.value, coordsArray.value])
+              map.value.addLayer({
+                id: 'background-layer',
+                type: 'background',
+                paint: {
+                  'background-color': '#ffffff',
+                  'background-opacity': 0,
+                },
               })
+
+              map.value.addLayer({
+                id: 'cluster',
+                type: 'symbol',
+                source: 'points',
+                filter: ['has', 'point_count'],
+                layout: {
+                  'icon-image': 'marker',
+                  'icon-size': 0.5,
+                  'icon-padding': 5,
+                  'text-field': ['get', 'point_count_abbreviated'],
+                  'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+                  'text-size': 12,
+                },
+              })
+
+              map.value?.addLayer({
+                id: 'unclustered-point',
+                type: 'symbol',
+                source: 'points',
+                filter: ['!has', 'point_count'],
+                layout: {
+                  'icon-image': 'marker',
+                  'icon-size': 0.5,
+                  'icon-padding': 0,
+                  'icon-allow-overlap': true,
+                  'icon-ignore-placement': true,
+                  'text-field': ['get', 'label'],
+                  'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+                  'text-size': 12,
+                  'text-allow-overlap': true,
+                  'text-ignore-placement': true,
+                  'icon-offset': [0, 16],
+                },
+                paint: {
+                  'icon-opacity': [
+                    'step',
+                    ['get', 'disabled'],
+                    1,
+                    1,
+                    0.5,
+                  ],
+                  'text-opacity': [
+                    'step',
+                    ['get', 'disabled'],
+                    1,
+                    1,
+                    0.5,
+                  ],
+                  'text-color': '#000000',
+                },
+              })
+
+              map.value?.addLayer({
+                id: 'unclustered-point-click',
+                type: 'circle',
+                source: 'points',
+                filter: ['!has', 'point_count'],
+                paint: {
+                  'circle-color': '#fff',
+                  'circle-opacity': 0,
+                  'circle-radius': 20,
+                },
+              })
+
+              map.value?.addLayer({
+                id: 'unclustered-point-active',
+                type: 'symbol',
+                source: 'points',
+                filter: ['all', ['!has', 'point_count'], ['==', 'active', 1]],
+                layout: {
+                  'icon-image': 'marker-active',
+                  'icon-size': 0.5,
+                  'icon-padding': 0,
+                  'icon-allow-overlap': true,
+                  'icon-ignore-placement': true,
+                  'text-allow-overlap': true,
+                  'text-ignore-placement': true,
+                  'icon-offset': [0, 16],
+                },
+                paint: {
+                  'icon-opacity': 1,
+                  'text-opacity': 1,
+                  'text-color': '#ffffff',
+                },
+              })
+
+              emit('mapLoaded', [map.value, coordsArray.value])
             })
           })
         })
@@ -479,14 +467,14 @@ function initCoords() {
       }
     })
 
-    map.value.on('mouseenter', ['cluster', 'unclustered-point'], (e: any) => {
+    map.value.on('mouseenter', ['cluster', 'unclustered-point-click'], (e: any) => {
       if (e.features?.[0]?.properties?.disabled) {
         map.value.getCanvas().style.cursor = ''
       } else {
         map.value.getCanvas().style.cursor = 'pointer'
       }
     })
-    map.value.on('mouseleave', ['cluster', 'unclustered-point'], () => {
+    map.value.on('mouseleave', ['cluster', 'unclustered-point-click'], () => {
       map.value.getCanvas().style.cursor = ''
     })
 
@@ -511,7 +499,7 @@ function initCoords() {
       )
     })
 
-    map.value.on('click', 'unclustered-point', (e: any) => {
+    map.value.on('click', 'unclustered-point-click', (e: any) => {
       toggleMarkerClicking()
       emit('markerClicked', e.features[0])
     })
