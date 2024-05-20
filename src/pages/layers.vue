@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <MapboxEmbedLayers
-      :coordinates="coordinatesString" map-style="custom" :custom-style-url="mapboxCustomStyleUrl" zoom="3" :access-token="mapboxAccessToken" :marker-icons="markerIcons" marker-shadow-icon="marker-shadow.png" marker-anchor="center" :active-marker="activeMarker" :marker-labels="markerLabels" :show-draggable-marker="showDraggableMarker" :disabled-markers="disabled" :draggable-marker-icon="markerIconDraggable" :draggable-marker-coordinates="draggableMarkerCoordinates" @map-loaded="onMapLoad" @marker-clicked="onMarkerClick" @coordinates-updated="onCoordinatesUpdated" @map-moved="onMapMoved" @map-zoomed="onMapZoomed" @map-clicked="showDraggableMarker = true" @map-idled="onMapIdled" @draggable-marker-moved="handleDraggableMarkerMoved" @draggable-marker-clicked="showDraggableMarker = false"
+      :coordinates="coordinatesString" map-style="custom" :custom-style-url="mapboxCustomStyleUrl" zoom="3" :access-token="mapboxAccessToken" :marker-icons="markerIcons" marker-shadow-icon="marker-shadow.png" :marker-active-icon="markerActiveIcon" marker-anchor="center" :active-marker="activeMarker" :marker-labels="markerLabels" :show-draggable-marker="showDraggableMarker" :disabled-markers="disabled" :draggable-marker-icon="markerIconDraggable" :draggable-marker-coordinates="draggableMarkerCoordinates" @map-loaded="onMapLoad" @marker-clicked="onMarkerClick" @coordinates-updated="onCoordinatesUpdated" @map-moved="onMapMoved" @map-zoomed="onMapZoomed" @map-clicked="showDraggableMarker = true" @map-idled="onMapIdled" @draggable-marker-moved="handleDraggableMarkerMoved" @draggable-marker-clicked="showDraggableMarker = false"
     />
   </div>
 </template>
@@ -16,6 +16,7 @@ const mapboxCustomStyleUrl = ref(import.meta.env.VITE_MAPBOX_CUSTOM_STYLE_URL)
 const markerIcon = ref('marker.png')
 const markerIconAlt = ref('marker-alt.png')
 const markerIconDraggable = ref('marker-draggable.png')
+const markerActiveIcon = ref('marker-active.png')
 const markerIcons = ref([markerIcon.value, markerIconAlt.value])
 
 const disabled = ref([])
@@ -129,18 +130,18 @@ function onMarkerClick(feature: any): void {
   const { id, disabled } = feature.properties || {}
   if (!disabled) {
     if (id === activeMarker.value) {
-      toggleAltIcon()
+      toggleActiveIcon()
     } else {
-      resetAltIcon()
+      resetActiveIcon()
     }
     activeMarker.value = id
   }
 }
-function resetAltIcon() {
-  markerIcons.value[1] = markerIconAlt.value
+function resetActiveIcon() {
+  markerActiveIcon.value = 'marker-active.png'
 }
-function toggleAltIcon() {
-  markerIcons.value[1] = markerIcons.value[1] === markerIconAlt.value ? markerIconDraggable.value : markerIconAlt.value
+function toggleActiveIcon() {
+  markerActiveIcon.value = markerActiveIcon.value === 'marker-active.png' ? markerIconDraggable.value : 'marker-active.png'
 }
 </script>
 
