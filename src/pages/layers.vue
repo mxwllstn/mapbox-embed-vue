@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <MapboxEmbedLayers
-      :coordinates="coordinatesString" map-style="custom" :custom-style-url="mapboxCustomStyleUrl" zoom="3" :access-token="mapboxAccessToken" :marker-icons="markerIcons" marker-anchor="center" :active-marker="activeMarker" :marker-labels="markerLabels" :show-draggable-marker="showDraggableMarker" :disabled-markers="disabled" :draggable-marker-icon="markerIconDraggable" :draggable-marker-coordinates="draggableMarkerCoordinates" @map-loaded="onMapLoad" @marker-clicked="onMarkerClick" @coordinates-updated="onCoordinatesUpdated" @map-moved="onMapMoved" @map-zoomed="onMapZoomed" @map-clicked="showDraggableMarker = true" @map-idled="onMapIdled" @draggable-marker-moved="handleDraggableMarkerMoved" @draggable-marker-clicked="showDraggableMarker = false"
+      :coordinates="coordinatesString" map-style="custom" :custom-style-url="mapboxCustomStyleUrl" zoom="3" :access-token="mapboxAccessToken" :marker-icons="markerIcons" marker-shadow-icon="marker-shadow.png" marker-anchor="center" :active-marker="activeMarker" :marker-labels="markerLabels" :show-draggable-marker="showDraggableMarker" :disabled-markers="disabled" :draggable-marker-icon="markerIconDraggable" :draggable-marker-coordinates="draggableMarkerCoordinates" @map-loaded="onMapLoad" @marker-clicked="onMarkerClick" @coordinates-updated="onCoordinatesUpdated" @map-moved="onMapMoved" @map-zoomed="onMapZoomed" @map-clicked="showDraggableMarker = true" @map-idled="onMapIdled" @draggable-marker-moved="handleDraggableMarkerMoved" @draggable-marker-clicked="showDraggableMarker = false"
     />
   </div>
 </template>
@@ -18,7 +18,7 @@ const markerIconAlt = ref('marker-alt.png')
 const markerIconDraggable = ref('marker-draggable.png')
 const markerIcons = ref([markerIcon.value, markerIconAlt.value])
 
-const disabled = ref([1])
+const disabled = ref([])
 
 const defaultCoords = computed(() => ['34.072799, -118.262034', '34.077072, -118.269450'])
 const locations = computed(() => defaultCoords.value)
