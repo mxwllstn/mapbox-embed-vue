@@ -1,11 +1,7 @@
 <template>
   <div class="container">
     <MapboxEmbed
-      :coordinates="coordinatesString" map-style="custom" :custom-style-url="mapboxCustomStyleUrl" zoom="3"
-      :access-token="mapboxAccessToken" :marker-icons="[markerIcon, markerIconAlt]" marker-anchor="center"
-      :marker-labels="markerLabels" :show-draggable-marker="showDraggableMarker" :draggable-marker-icon="markerIconDraggable" :draggable-marker-coordinates="draggableMarkerCoordinates" @map-loaded="onMapLoad" @marker-clicked="onMarkerClick"
-      @coordinates-updated="onCoordinatesUpdated" @map-moved="onMapMoved" @map-zoomed="onMapZoomed" @map-clicked="showDraggableMarker = true"
-      @map-idled="onMapIdled" @draggable-marker-moved="handleDraggableMarkerMoved" @draggable-marker-clicked="showDraggableMarker = false"
+      :coordinates="coordinatesString" map-style="custom" :custom-style-url="mapboxCustomStyleUrl" zoom="3" :access-token="mapboxAccessToken" :marker-icons="markerIcons" :marker-active-icon="markerActiveIcon" marker-anchor="center" :active-marker="activeMarker" :marker-labels="markerLabels" :show-draggable-marker="showDraggableMarker" :disabled-markers="disabled" :draggable-marker-icon="markerIconDraggable" :draggable-marker-coordinates="draggableMarkerCoordinates" @map-loaded="onMapLoad" @marker-clicked="onMarkerClick" @coordinates-updated="onCoordinatesUpdated" @map-moved="onMapMoved" @map-zoomed="onMapZoomed" @map-clicked="showDraggableMarker = true" @map-idled="onMapIdled" @draggable-marker-moved="handleDraggableMarkerMoved" @draggable-marker-clicked="showDraggableMarker = false"
     />
   </div>
 </template>
@@ -17,9 +13,13 @@ import MapboxEmbed from '../components/MapboxEmbed.vue'
 
 const mapboxAccessToken = ref(import.meta.env.VITE_MAPBOX_ACCESS_TOKEN as string)
 const mapboxCustomStyleUrl = ref(import.meta.env.VITE_MAPBOX_CUSTOM_STYLE_URL)
-const markerIcon = ref('marker.svg')
-const markerIconAlt = ref('marker-alt.svg')
-const markerIconDraggable = ref('marker-draggable.svg')
+const markerIcon = ref('marker.png')
+const markerIconAlt = ref('marker-alt.png')
+const markerIconDraggable = ref('marker-draggable.png')
+const markerActiveIcon = ref('marker-active.png')
+const markerIcons = ref([markerIcon.value, markerIconAlt.value])
+
+const disabled = ref([])
 
 const defaultCoords = computed(() => ['34.072799, -118.262034', '34.077072, -118.269450'])
 const locations = computed(() => defaultCoords.value)
@@ -32,10 +32,20 @@ const draggableMarkerCoordinates = ref()
 
 const map = ref()
 
-function onMapLoad([mapEmbed, coords, markers]: any) {
-  addLines(mapEmbed, coords)
+function onMapLoad([mapEmbed, coords]: any) {
   map.value = mapEmbed
-  markers.value = markers
+  addLines(coords)
+
+  // map.value.setLayoutProperty('cluster', 'text-field', ['get', 'labels'])
+  // map.value.setPaintProperty('unclustered-point', 'icon-opacity', 0.7)
+
+  map.value.setPaintProperty('unclustered-point', 'icon-opacity', [
+    'step',
+    ['get', 'disabled'],
+    0.9,
+    1,
+    0.3,
+  ])
 }
 function onMapMoved() {
   console.log('map moved')
@@ -79,8 +89,25 @@ function parseRoutes(coords: any[]) {
     }),
   }
 }
-function addLines(map: any, coords: any) {
+function addLines(coords: any) {
   const routes = parseRoutes(coords)
+
+  map.value.addSource('routes', {
+    type: 'geojson',
+    data: routes as any,
+  })
+
+  map.value.addLayer({
+    id: 'route',
+    source: 'routes',
+    type: 'line',
+    paint: {
+      'line-width': 2,
+      'line-color': '#fff',
+    },
+  })
+
+  map.value.moveLayer('route', 'unclustered-point')
 
   routes.features.forEach((route: { geometry: { coordinates: any } }) => {
     const lineDistance = turf.length(route as any)
@@ -95,47 +122,26 @@ function addLines(map: any, coords: any) {
     route.geometry.coordinates = arc as any
   })
 
-  map.on('load', () => {
-    map.addSource('routes', {
-      type: 'geojson',
-      data: routes as any,
-    })
+  map.value.resize()
+}
+const activeMarker = ref()
 
-    map.addLayer({
-      id: 'route',
-      source: 'routes',
-      type: 'line',
-      paint: {
-        'line-width': 2,
-        'line-color': '#fff',
-      },
-    })
-  })
-  map.resize()
-}
-function onMarkerClick([marker]: any): void {
-  toggleMarker(marker)
-}
-function toggleMarker(marker: any) {
-  const el = marker.getElement().firstChild
-  const { backgroundImage } = el.style
-  if (backgroundImage.includes(markerIcon.value)) {
-    setBackgroundImage(el, markerIconAlt.value)
-  } else {
-    setBackgroundImage(el, markerIcon.value)
+function onMarkerClick(feature: any): void {
+  const { id, disabled } = feature.properties || {}
+  if (!disabled) {
+    if (id === activeMarker.value) {
+      toggleActiveIcon()
+    } else {
+      resetActiveIcon()
+    }
+    activeMarker.value = id
   }
 }
-// function toggleMarkerByIx(ix: any) {
-//   const el = markers.value[ix].getElement()
-//   const { backgroundImage } = el.style
-//   if (backgroundImage.includes(markerIcon.value)) {
-//     setBackgroundImage(el, markerIconAlt.value)
-//   } else {
-//     setBackgroundImage(el, markerIcon.value)
-//   }
-// }
-function setBackgroundImage(el: { style: { backgroundImage: string } }, image: string) {
-  el.style.backgroundImage = `url('/${image}')`
+function resetActiveIcon() {
+  markerActiveIcon.value = 'marker-active.png'
+}
+function toggleActiveIcon() {
+  markerActiveIcon.value = markerActiveIcon.value === 'marker-active.png' ? 'marker-active-2.png' : 'marker-active.png'
 }
 </script>
 

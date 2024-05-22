@@ -1,4 +1,4 @@
 import MapboxEmbed from './MapboxEmbed.vue'
-import MapboxEmbedLayers from './MapboxEmbedLayers.vue'
+import MapboxEmbedMarkers from './MapboxEmbedMarkers.vue'
 
-export { MapboxEmbed, MapboxEmbedLayers }
+export { MapboxEmbed, MapboxEmbedMarkers }
