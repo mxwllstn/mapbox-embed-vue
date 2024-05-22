@@ -107,6 +107,10 @@ const props = defineProps({
     type: Object,
     default: null,
   },
+  sortMarkers: {
+    type: Boolean,
+    default: false,
+  },
 })
 const emit = defineEmits(['mapLoaded', 'markerClicked', 'coordinatesUpdated', 'mapMoved', 'mapZoomed', 'mapIdled', 'mapClicked', 'draggableMarkerClicked', 'draggableMarkerMoved'])
 
@@ -334,7 +338,7 @@ function initCoords() {
                 source: 'points',
                 filter: ['!has', 'point_count'],
                 layout: {
-                  'symbol-sort-key': ['to-number', ['get', 'id']],
+                  ...(props.sortMarkers && { 'symbol-sort-key': ['to-number', ['get', 'id']] }),
                   'icon-image': 'marker',
                   'icon-size': 0.5,
                   'icon-padding': 0,
