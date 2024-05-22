@@ -1,10 +1,10 @@
 import { createRouter } from 'vue-router'
 import Index from './index.vue'
-import Markers from './markers.vue'
+import MarkerMap from './marker-map.vue'
 
 const routes = [
   { path: '', component: Index },
-  { path: '/markers', component: Markers },
+  { path: '/marker-map', component: MarkerMap },
 ]
 
 function router(history: any) {
