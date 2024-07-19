@@ -1,5 +1,5 @@
 # mapbox-embed-vue
-Vue component that embeds a mapbox map with a marker
+Vue component for using mapbox
 
 ## Usage
 
