@@ -194,19 +194,23 @@ onBeforeMount(() => {
 })
 
 onMounted(async () => {
-  mapId.value = `map${globalThis.crypto.getRandomValues(new Uint32Array(10))[0]}`
-  await nextTick()
-  map.value = new mapboxgl.Map({
-    container: mapId.value, // container ID
-    projection: 'mercator',
-    style: styleUrl.value, // style URL
-    center: center.value || [0, 0], // starting position [lng, lat]
-    zoom: startingZoom.value, // starting zoom,
-    fadeDuration: 0,
-  } as MapBoxOptionsExtended)
-  map.value.dragRotate.disable()
-  map.value.touchZoomRotate.disableRotation()
-  initCoords()
+  try {
+    mapId.value = `map${globalThis.crypto.getRandomValues(new Uint32Array(10))[0]}`
+    await nextTick()
+    map.value = new mapboxgl.Map({
+      container: mapId.value, // container ID
+      projection: 'mercator',
+      style: styleUrl.value, // style URL
+      center: center.value || [0, 0], // starting position [lng, lat]
+      zoom: startingZoom.value, // starting zoom,
+      fadeDuration: 0,
+    } as MapBoxOptionsExtended)
+    map.value.dragRotate.disable()
+    map.value.touchZoomRotate.disableRotation()
+    initCoords()
+  } catch (err) {
+    console.log({ err })
+  }
 })
 
 onUnmounted(() => {
@@ -680,20 +684,44 @@ defineExpose({
 }
 
 @keyframes dragged {
-  0%   { top: 0; }
-  50% { top: 0.125rem; }
-  100% { top: 0; }
+  0% {
+    top: 0;
+  }
+
+  50% {
+    top: 0.125rem;
+  }
+
+  100% {
+    top: 0;
+  }
 }
 
 @keyframes toggle-show {
-  0%   { top: -1000px; }
-  75% { top: 0.125rem; }
-  100% { top: 0; }
+  0% {
+    top: -1000px;
+  }
+
+  75% {
+    top: 0.125rem;
+  }
+
+  100% {
+    top: 0;
+  }
 }
 
 @keyframes toggle-hide {
-  0%   { top: 0; }
-  25% { top: 0.125rem; }
-  100% { top: -1000px; }
+  0% {
+    top: 0;
+  }
+
+  25% {
+    top: 0.125rem;
+  }
+
+  100% {
+    top: -1000px;
+  }
 }
 </style>
