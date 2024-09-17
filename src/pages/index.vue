@@ -7,8 +7,8 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref, watch } from 'vue'
 import * as turf from '@turf/turf'
+import { computed, ref, watch } from 'vue'
 import MapboxEmbed from '../components/MapboxEmbed.vue'
 
 const mapboxAccessToken = ref(import.meta.env.VITE_MAPBOX_ACCESS_TOKEN as string)
