@@ -22,10 +22,6 @@ export type Styles =
   | 'navigation-night'
   | 'custom'
 
-interface MapBoxOptionsExtended extends mapboxgl.MapboxOptions {
-  projection: any
-}
-
 const props = defineProps({
   coordinates: {
     type: String,
@@ -183,8 +179,10 @@ watch(
   () => props.markerActiveIcon,
   () => {
     map.value?.loadImage(props.markerActiveIcon as any, (_error: any, image: any) => {
-      map.value?.removeImage('marker-active', image as any)
-      map.value?.addImage('marker-active', image as any)
+      if (image) {
+        map.value?.removeImage('marker-active', image as any)
+        map.value?.addImage('marker-active', image as any)
+      }
     })
   },
 )
@@ -204,7 +202,7 @@ onMounted(async () => {
       center: center.value || [0, 0], // starting position [lng, lat]
       zoom: startingZoom.value, // starting zoom,
       fadeDuration: 0,
-    } as MapBoxOptionsExtended)
+    } as mapboxgl.MapOptions)
     map.value.dragRotate.disable()
     map.value.touchZoomRotate.disableRotation()
     initCoords()
@@ -304,13 +302,19 @@ function initCoords() {
         const markerActive = props.markerActiveIcon || 'marker-active.png'
 
         map.value?.loadImage(marker as any, (_error: any, image: any) => {
-          map.value?.addImage('marker', image as any)
+          if (image) {
+            map.value?.addImage('marker', image as any)
+          }
 
           map.value?.loadImage(markerAlt as any, (_error: any, image: any) => {
-            map.value?.addImage('marker-alt', image as any)
+            if (image) {
+              map.value?.addImage('marker-alt', image as any)
+            }
 
             map.value?.loadImage(markerActive as any, (_error: any, image: any) => {
-              map.value?.addImage('marker-active', image as any)
+              if (image) {
+                map.value?.addImage('marker-active', image as any)
+              }
 
               map.value.addLayer({
                 id: 'background-layer',
