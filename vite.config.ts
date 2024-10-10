@@ -12,6 +12,13 @@ export default defineConfig({
   test: {
     environment: 'happy-dom',
   },
+  css: {
+    preprocessorOptions: {
+      scss: {
+        api: 'modern',
+      },
+    },
+  },
   build: {
     lib: {
       entry: path.resolve(__dirname, 'src/components/index.ts'),
