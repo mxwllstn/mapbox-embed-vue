@@ -244,7 +244,7 @@ const pointsData = computed(() => {
           properties: {
             id: ix,
             active: props.activeMarker === ix ? 1 : 0,
-            disabled: props.disabledMarkers.includes(ix) ? 1 : 0,
+            disabled: props.disabledMarkers?.includes(ix) ? 1 : 0,
             label: props.markerLabels && props.markerLabels[ix],
             ...(props.dataProperties && props.dataProperties[ix]),
           },
