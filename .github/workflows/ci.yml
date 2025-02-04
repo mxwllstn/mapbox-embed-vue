@@ -8,6 +8,9 @@ on:
     branches:
       - main
 
+env:
+  COREPACK_INTEGRITY_KEYS: 0
+
 jobs:
   lint:
     runs-on: ubuntu-latest
