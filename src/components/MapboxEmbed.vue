@@ -119,7 +119,7 @@ const removeDraggableTimeoutId = ref()
 const useContainer = computed(() => props.width || props.height)
 const coordsArray = computed(() => props.coordinates && mapId.value ? parseCoordinates(props.coordinates) : null)
 const center = computed(() => coordsArray.value ? turf.getCoords(turf.center(turf.points(coordsArray.value as any[]))) : null)
-const mapBounds = computed(() => turf.bbox(turf.lineString(coordsArray.value as any[])))
+const mapBounds = computed(() => coordsArray.value && coordsArray.value.length > 1 ? turf.bbox(turf.lineString(coordsArray.value as any[])) : null)
 const startingZoom = computed(() => Number(props.zoom))
 const styleUrl = computed(() => {
   switch (props.mapStyle as Styles) {
@@ -614,8 +614,8 @@ function setBoundsToCoords(options?: {
 }) {
   const { duration, padding } = options || {}
   const coordinates = options?.coordinates || coordsArray.value
-  const bounds = options?.coordinates ? turf.bbox(turf.lineString(options?.coordinates as any[])) : mapBounds.value
-  if (coordinates && coordinates?.length > 1) {
+  const bounds = coordinates && coordinates.length > 1 ? turf.bbox(turf.lineString(coordinates as any[])) : mapBounds.value
+  if (coordinates && coordinates?.length > 1 && bounds) {
     map.value?.fitBounds(bounds as mapboxgl.LngLatBoundsLike, {
       duration: duration || 0,
       padding: {
