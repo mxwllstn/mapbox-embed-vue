@@ -182,12 +182,8 @@ onUnmounted(() => {
 })
 
 function parseCoordinates(coordString: string) {
-  return coordString?.split('|').map(
-    loc =>
-      loc
-        .split(',')
-        .map(coords => Number(coords))
-        .reverse() as mapboxgl.LngLatLike,
+  return coordString?.split('|')?.map(
+    loc => loc?.split(',')?.map(coords => Number(coords))?.reverse() as mapboxgl.LngLatLike,
   ) as mapboxgl.LngLatLike[]
 }
 
