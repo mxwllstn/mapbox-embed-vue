@@ -148,8 +148,8 @@ const styleUrl = computed(() => {
 
 watch(coordsArray, async (newCoords, oldCoords) => {
   if (newCoords && oldCoords) {
-    const newCoordinates = parseCoordinates(newCoords as any)
-    const oldCoordinates = parseCoordinates(oldCoords as any)
+    const newCoordinates = newCoords
+    const oldCoordinates = oldCoords
     if (newCoordinates.length > oldCoordinates.length) {
       setBoundsToCoords()
     }
