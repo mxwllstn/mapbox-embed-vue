@@ -12,7 +12,7 @@
 
 <script lang="ts" setup>
 import * as turf from '@turf/turf'
-import { computed, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import MapboxEmbed from '../components/MapboxEmbedMarkers.vue'
 
 const mapboxAccessToken = ref(import.meta.env.VITE_MAPBOX_ACCESS_TOKEN as string)
@@ -21,7 +21,7 @@ const markerIcon = ref('marker.svg')
 const markerIconAlt = ref('marker-alt.svg')
 const markerIconDraggable = ref('marker-draggable.svg')
 
-const defaultCoords = computed(() => ['34.072799, -118.262034', '34.077072, -118.269450'])
+const defaultCoords = ref(['34.072799, -118.262034', '34.077072, -118.269450'])
 const locations = computed(() => defaultCoords.value)
 const markerLabels = computed(() => locations.value.map((_val, idx) => (idx + 1).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false })))
 const coordinates = computed(() => locations.value ? locations.value.map((location: any) => location) : null)
@@ -31,6 +31,21 @@ const showDraggableMarker = ref(false)
 const draggableMarkerCoordinates = ref()
 
 const map = ref()
+
+onMounted(() => {
+  console.log('coordinates', coordinates.value)
+  console.log('coordinatesString', coordinatesString.value)
+  setTimeout(() => {
+    defaultCoords.value = ['34.072799, -118.262034', '34.077072, -118.269450', '34.077072, -118.279450']
+    console.log('coordinates', coordinates.value)
+    console.log('coordinatesString', coordinatesString.value)
+  }, 5000)
+  setTimeout(() => {
+    defaultCoords.value = ['34.072799, -118.262034', '34.077072, -118.269450']
+    console.log('coordinates', coordinates.value)
+    console.log('coordinatesString', coordinatesString.value)
+  }, 10000)
+})
 
 function onMapLoad([mapEmbed, coords, markers]: any) {
   addLines(mapEmbed, coords)

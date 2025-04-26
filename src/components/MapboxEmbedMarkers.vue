@@ -147,14 +147,14 @@ watch(coordsArray, async (newCoords, oldCoords) => {
       if (newCoordinates.length > oldCoordinates.length) {
         const ix = newCoordinates.length - 1
         props.showMarkers && markers.value?.push(createMarker(newCoordinates[ix], ix))
-        setBoundsToCoords()
       } else {
         const ix = getIndexOfRemovedMarker(oldCoordinates, newCoordinates)
         props.showMarkers && markers.value[ix].remove()
       }
-      await nextTick()
-      updateCoords()
+      setBoundsToCoords()
     }
+    await nextTick()
+    updateCoords()
   }
 })
 
