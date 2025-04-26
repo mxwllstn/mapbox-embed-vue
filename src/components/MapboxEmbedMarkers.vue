@@ -384,7 +384,8 @@ function updateCoords() {
     coordsArray.value.forEach((coords, ix) => {
       /* update marker coords */
       const marker = markers.value?.[ix]
-      props.markerLabels && marker.style.setProperty('--marker-label', `"${props.markerLabels[ix]}"`)
+      console.log('updatecoords-debug', ix, props.markerLabels, props.markerLabels[ix])
+      props.markerLabels && marker.getElement()?.style.setProperty('--marker-label', `"${props.markerLabels[ix]}"`)
       marker?.setLngLat(coords)
     })
     emit('coordinatesUpdated', [map.value, coordsArray.value])
