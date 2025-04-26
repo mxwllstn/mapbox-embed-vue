@@ -132,17 +132,29 @@ const styleUrl = computed(() => {
   }
 })
 
+function getIndexOfRemovedMarker(oldCoords: any[], newCoords: any[]) {
+  oldCoords = oldCoords.map(arr => JSON.stringify(arr))
+  newCoords = newCoords.map(arr => JSON.stringify(arr))
+  const removedCoords = oldCoords.filter(val => !newCoords.includes(val))
+  return oldCoords.findIndex(val => removedCoords.includes(val))
+}
+
 watch(coordsArray, async (newCoords, oldCoords) => {
   if (newCoords && oldCoords) {
     const newCoordinates = newCoords
     const oldCoordinates = oldCoords
-    if (newCoordinates.length > oldCoordinates.length) {
-      const ix = newCoordinates.length - 1
-      props.showMarkers && markers.value?.push(createMarker(newCoordinates[ix], ix))
-      setBoundsToCoords()
+    if (newCoordinates.length !== oldCoordinates.length) {
+      if (newCoordinates.length > oldCoordinates.length) {
+        const ix = newCoordinates.length - 1
+        props.showMarkers && markers.value?.push(createMarker(newCoordinates[ix], ix))
+        setBoundsToCoords()
+      } else {
+        const ix = getIndexOfRemovedMarker(oldCoordinates, newCoordinates)
+        props.showMarkers && markers.value[ix].remove()
+      }
+      await nextTick()
+      updateCoords()
     }
-    await nextTick()
-    updateCoords()
   }
 })
 
