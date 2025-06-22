@@ -3,6 +3,6 @@
   "compilerOptions": {
     "verbatimModuleSyntax": false
   },
-  "include": ["**/*.ts", "**/*.vue"],
+  "include": ["src/**/*.ts", "src/**/*.vue"],
   "exclude": ["node_modules", "dist"]
 }
