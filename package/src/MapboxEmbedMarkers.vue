@@ -11,16 +11,16 @@ import mapboxgl from 'mapbox-gl'
 import { computed, nextTick, onBeforeMount, onMounted, onUnmounted, ref, watch } from 'vue'
 import 'mapbox-gl/dist/mapbox-gl.css'
 
-export type Styles =
-  | 'streets'
-  | 'outdoors'
-  | 'light'
-  | 'dark'
-  | 'satellite'
-  | 'satellite-streets'
-  | 'navigation-day'
-  | 'navigation-night'
-  | 'custom'
+export type Styles
+  = | 'streets'
+    | 'outdoors'
+    | 'light'
+    | 'dark'
+    | 'satellite'
+    | 'satellite-streets'
+    | 'navigation-day'
+    | 'navigation-night'
+    | 'custom'
 
 interface MapBoxOptionsExtended extends mapboxgl.MapboxOptions {
   projection: any
@@ -235,18 +235,18 @@ function initCoords() {
     })
     markers.value = props.showMarkers
       ? coordsArray.value.map((coords, ix) => {
-        const marker = createMarker(coords, ix)
-        const el = marker?.getElement()
-        if (el) {
-          el.onclick = () => {
-            markerZIndex.value++
-            el.style.zIndex = String(markerZIndex.value)
-            emit('markerClicked', [marker, ix])
-            toggleMarkerClicking()
+          const marker = createMarker(coords, ix)
+          const el = marker?.getElement()
+          if (el) {
+            el.onclick = () => {
+              markerZIndex.value++
+              el.style.zIndex = String(markerZIndex.value)
+              emit('markerClicked', [marker, ix])
+              toggleMarkerClicking()
+            }
           }
-        }
-        return marker
-      })
+          return marker
+        })
       : []
     emit('mapLoaded', [map.value, coordsArray.value, markers.value])
     props.showDraggableMarker && createDraggableMarker(props.draggableMarkerCoordinates || map.value.getCenter())

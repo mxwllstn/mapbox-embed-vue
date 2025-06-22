@@ -11,16 +11,16 @@ import mapboxgl from 'mapbox-gl'
 import { computed, nextTick, onBeforeMount, onMounted, onUnmounted, ref, watch } from 'vue'
 import 'mapbox-gl/dist/mapbox-gl.css'
 
-export type Styles =
-  | 'streets'
-  | 'outdoors'
-  | 'light'
-  | 'dark'
-  | 'satellite'
-  | 'satellite-streets'
-  | 'navigation-day'
-  | 'navigation-night'
-  | 'custom'
+export type Styles
+  = | 'streets'
+    | 'outdoors'
+    | 'light'
+    | 'dark'
+    | 'satellite'
+    | 'satellite-streets'
+    | 'navigation-day'
+    | 'navigation-night'
+    | 'custom'
 
 const props = defineProps({
   coordinates: {
@@ -239,21 +239,21 @@ const pointsData = computed(() => {
     type: 'FeatureCollection',
     features: coordsArray.value
       ? coordsArray.value.map((coords: mapboxgl.LngLatLike, ix: number) => {
-        return {
-          type: 'Feature',
-          properties: {
-            id: ix,
-            active: props.activeMarker === ix ? 1 : 0,
-            disabled: props.disabledMarkers?.includes(ix) ? 1 : 0,
-            label: props.markerLabels && props.markerLabels[ix],
-            ...(props.dataProperties && props.dataProperties[ix]),
-          },
-          geometry: {
-            type: 'Point',
-            coordinates: coords as any,
-          },
-        }
-      })
+          return {
+            type: 'Feature',
+            properties: {
+              id: ix,
+              active: props.activeMarker === ix ? 1 : 0,
+              disabled: props.disabledMarkers?.includes(ix) ? 1 : 0,
+              label: props.markerLabels && props.markerLabels[ix],
+              ...(props.dataProperties && props.dataProperties[ix]),
+            },
+            geometry: {
+              type: 'Point',
+              coordinates: coords as any,
+            },
+          }
+        })
       : [],
   }
 })

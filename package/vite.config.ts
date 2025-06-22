@@ -1,4 +1,3 @@
-/// <reference types="vitest" />
 import path from 'node:path'
 import vue from '@vitejs/plugin-vue'
 import { defineConfig } from 'vite'
@@ -9,12 +8,9 @@ import svgLoader from 'vite-svg-loader'
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [vue(), svgLoader(), dts(), cssInjectedByJsPlugin()],
-  test: {
-    environment: 'happy-dom',
-  },
   build: {
     lib: {
-      entry: path.resolve(__dirname, 'src/components/index.ts'),
+      entry: path.resolve(__dirname, 'src/index.ts'),
       name: 'mapbox-embed',
       fileName: format => (format === 'es' ? 'mapbox-embed.mjs' : 'mapbox-embed.cjs'),
     },

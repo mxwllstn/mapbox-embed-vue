@@ -11,9 +11,9 @@
 </template>
 
 <script lang="ts" setup>
+import { MapboxEmbedMarkers as MapboxEmbed } from '@mxwllstn/mapbox-embed-vue'
 import * as turf from '@turf/turf'
 import { computed, onMounted, ref, watch } from 'vue'
-import MapboxEmbed from '../components/MapboxEmbedMarkers.vue'
 
 const mapboxAccessToken = ref(import.meta.env.VITE_MAPBOX_ACCESS_TOKEN as string)
 const mapboxCustomStyleUrl = ref(import.meta.env.VITE_MAPBOX_CUSTOM_STYLE_URL)
