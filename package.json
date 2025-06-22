@@ -9,8 +9,8 @@
     "lint": "pnpm run --parallel lint",
     "lint:fix": "pnpm run --parallel lint:fix",
     "typecheck": "pnpm run --parallel typecheck",
-    "prepublish": "pnpm --filter @mxwllstn/maxbox-embed-vue run prepublish",
-    "release": "pnpm run lint && pnpm run test && pnpm run build && pnpm --filter @mxwllstn/maxbox-embed-vue run release"
+    "prepublish": "pnpm --filter @mxwllstn/mapbox-embed-vue run prepublish",
+    "release": "pnpm run lint && pnpm run test && pnpm run build && pnpm --filter @mxwllstn/mapbox-embed-vue run release"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^4.15.0",
