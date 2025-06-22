@@ -1,69 +1,22 @@
 {
-  "name": "@mxwllstn/mapbox-embed-vue",
-  "type": "module",
-  "version": "0.1.12",
-  "packageManager": "pnpm@9.0.4+sha512.c374b52de3de88c58fd8333df664a737279cdb0e1344ba4054d3b1fffa9a1a3670854f755dca4f16adea3f14be9896a7fcaf167409fe0c1ad60475271dafe81a",
-  "description": "Vue component that embeds a mapbox map with a marker",
-  "author": "Max Stein <maxwell.stein@gmail.com> (https://maxstein.net",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/mxwllstn/mapbox-embed-vue"
-  },
-  "exports": {
-    ".": {
-      "import": {
-        "types": "./dist/components/index.d.ts",
-        "default": "./dist/mapbox-embed.mjs"
-      },
-      "require": {
-        "types": "./dist/components/index.d.ts",
-        "default": "./dist/mapbox-embed.cjs"
-      }
-    }
-  },
-  "main": "./dist/mapbox-embed.cjs",
-  "module": "./dist/mapbox-embed.mjs",
-  "files": [
-    "dist"
-  ],
+  "name": "mapbox-embed-vue",
+  "version": "0.1.0",
   "scripts": {
-    "dev": "vite",
-    "build": "vue-tsc --noEmit && vite build",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
-    "test": "vitest run",
-    "preinstall": "npx only-allow pnpm",
-    "prepublish": "npm run lint && npm run build",
-    "release": "npm run lint && npm run test && npm run build && bumpp && npm publish"
-  },
-  "dependencies": {
-    "@turf/turf": "7.1.0",
-    "@types/mapbox-gl": "^3.4.1",
-    "mapbox-gl": "^3.7.0"
+    "dev": "pnpm run --parallel dev",
+    "build": "pnpm run --parallel build",
+    "preview": "pnpm run --parallel preview",
+    "test": "pnpm run --parallel test",
+    "lint": "pnpm run --parallel lint",
+    "lint:fix": "pnpm run --parallel lint:fix",
+    "typecheck": "pnpm run --parallel typecheck",
+    "prepublish": "pnpm --filter @mxwllstn/maxbox-embed-vue run prepublish",
+    "release": "pnpm run lint && pnpm run test && pnpm run build && pnpm --filter @mxwllstn/maxbox-embed-vue run release"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^3.8.0",
-    "@babel/types": "^7.26.0",
-    "@types/node": "^22.9.0",
-    "@typescript-eslint/eslint-plugin": "^8.13.0",
-    "@typescript-eslint/parser": "^8.13.0",
-    "@vitejs/plugin-vue": "^5.1.4",
-    "@vue/test-utils": "^2.4.6",
-    "bumpp": "^9.8.1",
-    "eslint": "^9.14.0",
-    "eslint-plugin-format": "^0.1.2",
-    "happy-dom": "^15.11.0",
-    "postcss-html": "^1.7.0",
-    "typescript": "^5.6.3",
-    "vite": "^5.4.10",
-    "vite-plugin-css-injected-by-js": "^3.5.2",
-    "vite-plugin-dts": "^4.3.0",
-    "vite-svg-loader": "^5.1.0",
-    "vitest": "^3.0.5",
-    "vue": "^3.5.12",
-    "vue-eslint-parser": "^9.4.3",
-    "vue-router": "^4.4.5",
-    "vue-tsc": "^2.1.10"
+    "@antfu/eslint-config": "^4.15.0",
+    "@vue/tsconfig": "^0.7.0",
+    "eslint": "^9.29.0",
+    "typescript": "^5.8.3",
+    "vue": "^3.5.17"
   }
 }

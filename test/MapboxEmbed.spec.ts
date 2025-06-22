@@ -1,9 +1,9 @@
+import { MapboxEmbed } from '@mxwllstn/mapbox-embed-vue'
 import { mount } from '@vue/test-utils'
 import { expect, it } from 'vitest'
-import MapboxEmbed from './MapboxEmbed.vue'
 
 const wrapper = mount(MapboxEmbed, {
-  propsData: { mapStyle: 'satellite' },
+  props: { mapStyle: 'satellite' },
 })
 
 it('testing MapboxEmbed component props', async () => {
