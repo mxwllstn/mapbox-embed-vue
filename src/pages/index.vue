@@ -145,7 +145,7 @@ function toggleActiveIcon() {
 }
 </script>
 
-<style lang="scss">
+<style lang="css">
 body {
   margin: 0;
   padding: 0;

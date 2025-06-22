@@ -3,7 +3,7 @@
   "eslint.format.enable": true,
 
   // Enable the ESlint flat config support
-  "eslint.experimental.useFlatConfig": true,
+  "eslint.useFlatConfig": true,
 
   // Disable the default formatter, use eslint instead
   "prettier.enable": false,
@@ -22,13 +22,6 @@
     "jsonc",
     "yaml",
     "toml"
-  ],
-
-  "stylelint.validate": [
-    "css",
-    "less",
-    "vue",
-    "scss"
   ],
 
   // Avoid polluting search results with lockfile content

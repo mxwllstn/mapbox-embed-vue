@@ -140,21 +140,13 @@ function toggleMarker(marker: any) {
     setBackgroundImage(el, markerIcon.value)
   }
 }
-// function toggleMarkerByIx(ix: any) {
-//   const el = markers.value[ix].getElement()
-//   const { backgroundImage } = el.style
-//   if (backgroundImage.includes(markerIcon.value)) {
-//     setBackgroundImage(el, markerIconAlt.value)
-//   } else {
-//     setBackgroundImage(el, markerIcon.value)
-//   }
-// }
+
 function setBackgroundImage(el: { style: { backgroundImage: string } }, image: string) {
   el.style.backgroundImage = `url('/${image}')`
 }
 </script>
 
-<style lang="scss">
+<style lang="css">
 body {
   margin: 0;
   padding: 0;
