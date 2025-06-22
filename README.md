@@ -30,15 +30,15 @@ export type Styles =
 
 ```bash
 # install dependencies
-$ yarn install
+$ pnpm i
 
-# serve with hot reload at localhost:3000
-$ yarn dev
+# serve with hot reload
+$ pnpm run dev
 
 # build for production
-$ yarn build
+$ pnpm run build
 
 # preview production build
-$ yarn preview --host
+$ pnpm run preview
 
 ```
