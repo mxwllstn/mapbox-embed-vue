@@ -21,6 +21,16 @@ jobs:
         with:
           node-version: lts/*
 
-      - run: npx changelogithub
+      - name: Authenticate with private NPM package
+        run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
+
+      - name: Install dependencies
+        run: npx nypm@latest i
+
+      - name: Build
+        run: npm run build
+
+      # creates release and adds audio-player-vue.zip. as asset
+      - run: npx changelogithub --assets ./packages/cli/dist/mapbox-embed-vue.zip
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}

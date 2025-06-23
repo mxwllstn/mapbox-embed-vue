@@ -24,6 +24,9 @@
   },
   "main": "./dist/mapbox-embed.cjs",
   "module": "./dist/mapbox-embed.mjs",
+  "bin": {
+    "@mxwllstn/mapbox-embed-vue": "./bin/index.mjs"
+  },
   "files": [
     "dist"
   ],
