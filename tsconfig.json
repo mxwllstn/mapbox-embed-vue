@@ -3,7 +3,7 @@
   "compilerOptions": {
     "paths": {
       "@mxwllstn/mapbox-embed-vue": [
-        "./package/src/index.ts"
+        "./packages/mapbox-embed-vue/src/index.ts"
       ]
     }
   }

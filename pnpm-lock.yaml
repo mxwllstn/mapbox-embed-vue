@@ -54,7 +54,7 @@ importers:
         specifier: ^2.2.10
         version: 2.2.10(typescript@5.8.3)
 
-  package:
+  packages/mapbox-embed-vue:
     dependencies:
       '@turf/turf':
         specifier: 7.2.0

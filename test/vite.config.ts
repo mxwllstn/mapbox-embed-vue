@@ -8,7 +8,7 @@ export default defineConfig({
   plugins: [vue()],
   resolve: {
     alias: {
-      '@mxwllstn/mapbox-embed-vue': path.resolve(__dirname, '../package/src'),
+      '@mxwllstn/mapbox-embed-vue': path.resolve(__dirname, '../packages/mapbox-embed-vue/src'),
     },
   },
   test: {
