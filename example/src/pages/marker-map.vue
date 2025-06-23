@@ -15,7 +15,7 @@ import { MapboxEmbedMarkers as MapboxEmbed } from '@mxwllstn/mapbox-embed-vue'
 import * as turf from '@turf/turf'
 import { computed, onMounted, ref, watch } from 'vue'
 
-const mapboxAccessToken = ref(import.meta.env.VITE_MAPBOX_ACCESS_TOKEN as string)
+const mapboxAccessToken = ref(import.meta.env.VITE_MAPBOX_ACCESS_TOKEN)
 const mapboxCustomStyleUrl = ref(import.meta.env.VITE_MAPBOX_CUSTOM_STYLE_URL)
 const markerIcon = ref('marker.svg')
 const markerIconAlt = ref('marker-alt.svg')
