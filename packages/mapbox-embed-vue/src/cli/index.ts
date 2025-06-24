@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import { runExport } from './export.js'
 
 const args = process.argv.slice(2)

@@ -11,7 +11,8 @@
     "typecheck": "pnpm run --parallel typecheck",
     "prepublish": "pnpm --filter @mxwllstn/mapbox-embed-vue run prepublish",
     "release": "pnpm run lint && pnpm run test && pnpm run build && pnpm --filter @mxwllstn/mapbox-embed-vue run release",
-    "compile": "pnpm --filter @mapbox-embed-vue/cli run compile"
+    "compile": "pnpm --filter @mxwllstn/mapbox-embed-vue run compile",
+    "cli": "pnpm --filter @mxwllstn/mapbox-embed-vue run cli"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^4.15.0",

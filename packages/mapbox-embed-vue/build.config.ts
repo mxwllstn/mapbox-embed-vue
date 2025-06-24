@@ -2,7 +2,7 @@ import { defineBuildConfig } from 'unbuild'
 
 export default defineBuildConfig({
   entries: ['src/cli'],
-  clean: true,
+  clean: false,
   declaration: 'node16',
   rollup: {
     emitCJS: false,

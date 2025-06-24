@@ -1,16 +1,15 @@
-#!/usr/bin/env node
 import fs from 'node:fs'
 import path from 'node:path'
 import { Readable } from 'node:stream'
 import { finished } from 'node:stream/promises'
 import AdmZip from 'adm-zip'
-import axios from 'axios'
 
 const packageName = 'mapbox-embed-vue'
 const releaseDataUrl = 'https://api.github.com/repos/mxwllstn/mapbox-embed-vue/releases/latest'
 
 async function getReleaseUrl() {
-  const { data } = await axios.get(releaseDataUrl)
+  const res = await fetch(releaseDataUrl)
+  const data = await res.json()
 
   const release = data.assets.find((asset: { name: string | string[] }) => asset.name.includes(packageName))
   return release.browser_download_url
@@ -36,7 +35,7 @@ async function downloadFile(url: string, outputDir: string, filename?: string) {
       const destination = path.resolve(path.join(outputDir, filename))
 
       const fileStream = fs.createWriteStream(destination, { flags: 'w' })
-      await finished(Readable.fromWeb(res.body).pipe(fileStream))
+      await finished(Readable.fromWeb(res.body as any).pipe(fileStream))
       return destination
     }
   } catch (err) {
