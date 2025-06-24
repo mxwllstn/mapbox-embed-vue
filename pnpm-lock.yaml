@@ -84,6 +84,12 @@ importers:
       '@types/mapbox-gl':
         specifier: ^3.4.1
         version: 3.4.1
+      adm-zip:
+        specifier: ^0.5.16
+        version: 0.5.16
+      axios:
+        specifier: ^1.10.0
+        version: 1.10.0
       mapbox-gl:
         specifier: ^3.13.0
         version: 3.13.0
