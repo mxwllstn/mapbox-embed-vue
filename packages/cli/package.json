@@ -12,7 +12,6 @@
   "scripts": {
     "compile": "tsx ./src/compile.ts",
     "cli": "tsx ./src/cli.ts",
-    "release": "cp ./dist/cli.mjs ../mapbox-embed-vue/dist",
     "build": "unbuild && pnpm run compile",
     "lint": "eslint .",
     "lint:fix": "eslint --fix ."

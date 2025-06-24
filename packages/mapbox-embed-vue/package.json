@@ -30,6 +30,7 @@
   ],
   "scripts": {
     "build": "pnpm run typecheck && vite build",
+    "postbuild": "cp ../cli/dist/cli.mjs ./dist",
     "prepublish": "pnpm run lint && pnpm run build",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
