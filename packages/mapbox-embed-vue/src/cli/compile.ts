@@ -5,9 +5,7 @@ import path from 'node:path'
 import AdmZip from 'adm-zip'
 import packageJson from '../../package.json' with { type: 'json' }
 
-const componentPath = '../mapbox-embed-vue'
-
-const srcPath = path.join(componentPath, 'src')
+const srcPath = 'src'
 const outputPath = path.join('./exports')
 
 if (!fs.existsSync(outputPath)) {
@@ -19,9 +17,10 @@ const zip = new AdmZip()
 const output = path.join(outputPath, 'mapbox-embed-vue.zip')
 
 // archive src directory
-zip.addLocalFolder(srcPath, 'src')
-zip.deleteFile('src/cli')
-zip.deleteFile('cli.ts')
+await zip.addLocalFolderPromise(srcPath, {
+  zipPath: 'src',
+  filter: item => !item.includes('cli'),
+})
 
 // remove unneeded data from package.json and write to archive
 const { packageManager, exports, main, module, bin, files, scripts, ...config } = packageJson
