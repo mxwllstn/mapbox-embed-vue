@@ -40,6 +40,8 @@
   "dependencies": {
     "@turf/turf": "7.2.0",
     "@types/mapbox-gl": "^3.4.1",
+    "adm-zip": "^0.5.16",
+    "axios": "^1.10.0",
     "mapbox-gl": "^3.13.0"
   },
   "devDependencies": {
