@@ -10,7 +10,7 @@
     "lint:fix": "pnpm run --parallel lint:fix",
     "typecheck": "pnpm run --parallel typecheck",
     "prepublish": "pnpm --filter @mxwllstn/mapbox-embed-vue run prepublish",
-    "release": "pnpm run lint && pnpm run test && pnpm run build && pnpm --filter && pnpm --filter @mxwllstn/mapbox-embed-vue run release",
+    "release": "pnpm run lint && pnpm run test && pnpm run build && pnpm --filter @mxwllstn/mapbox-embed-vue run release",
     "compile": "pnpm --filter @mapbox-embed-vue/cli run compile"
   },
   "devDependencies": {
