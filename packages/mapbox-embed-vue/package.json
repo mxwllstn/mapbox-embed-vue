@@ -24,15 +24,12 @@
   },
   "main": "./dist/mapbox-embed.cjs",
   "module": "./dist/mapbox-embed.mjs",
-  "bin": {
-    "@mxwllstn/mapbox-embed-vue": "./bin/index.mjs"
-  },
+  "bin": "./cli.mjs",
   "files": [
     "dist"
   ],
   "scripts": {
     "build": "pnpm run typecheck && vite build",
-    "preinstall": "npx only-allow pnpm",
     "prepublish": "pnpm run lint && pnpm run build",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
